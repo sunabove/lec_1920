@@ -4,7 +4,8 @@ import RPi.GPIO as GPIO
 # Use "GPIO" pin numbering
 GPIO.setmode(GPIO.BCM)
 # Set LED pin as output
-GPIO.setup(17, GPIO.OUT) 
+led_pin = 17
+GPIO.setup(led_pin, GPIO.OUT) 
 while True:
    # Turn LED on
    GPIO.output(led_pin, GPIO.HIGH)

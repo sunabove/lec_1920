@@ -3,9 +3,12 @@ from time import sleep
 
 robot = Robot(left=(4, 14), right=(17, 18))
 
-for i in range(4):
-    robot.forward()
-    sleep(1)
-    robot.reverse()
-    sleep(1)
-pass
+interval = 2
+robot.forward()
+sleep(interval)
+robot.left()
+sleep(interval)
+robot.right()
+sleep(interval)
+robot.backward()
+sleep(interval)

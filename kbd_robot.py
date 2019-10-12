@@ -11,6 +11,8 @@ actions = {
 }
 
 def main(window):
+    print( "Press Ctrl-C to quit !" )
+
     next_key = None
     while True:
         curses.halfdelay(1)

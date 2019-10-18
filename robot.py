@@ -4,11 +4,15 @@ from time import sleep
 robot = Robot(left=(4, 14), right=(17, 18))
 
 interval = 2
+print( "Moving forward ..." )
 robot.forward()
 sleep(interval)
+print( "Moving left ..." )
 robot.left()
 sleep(interval)
+print( "Moving right ..." )
 robot.right()
 sleep(interval)
+print( "Moving backward ..." )
 robot.backward()
 sleep(interval)

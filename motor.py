@@ -1,3 +1,4 @@
+# coding: utf-8
 from gpiozero import Motor
 from time import sleep
 

@@ -2,7 +2,8 @@
 from gpiozero import Robot
 from time import sleep
 
-robot = Robot(left=(4, 14), right=(17, 18))
+#robot = Robot(left=(4, 14), right=(17, 18))
+robot = Robot(left=(17, 18), right=(22, 23))
 
 interval = 2
 print( "Moving forward ..." )

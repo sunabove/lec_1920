@@ -2,7 +2,8 @@
 import curses
 from gpiozero import Robot
 
-robot = Robot(left=(4, 14), right=(17, 18))
+#robot = Robot(left=(4, 14), right=(17, 18))
+robot = Robot(left=(17, 18), right=(22, 23))
 
 actions = {
     curses.KEY_UP:    robot.forward,
@@ -33,5 +34,10 @@ def main(window):
                 next_key = window.getch()
             # KEY RELEASED
             robot.stop()
+        pass
+    pass
+pass
 
 curses.wrapper(main)
+
+# end

@@ -1,30 +1,17 @@
-allfirstedu@gmail.com
+tcp/h264://10.3.141.1:3333 
 
-Traxxas 4-Tec 2.0, RC Chassis
-https://www.amazon.com/dp/B0744PTCCN/ref=psdc_166588011_t4_B00NYR8D1O 
-Refit Part Servo Saver & Steering Link Rod Kit for 1/10 Traxxas GT4-TEC 2.0 Car
-https://www.ebay.com/itm/Alloy-Servo-Saver-Steering-Link-Rod-Kit-for-1-10-Traxxas-GT4-TEC-2-0-RC-Car-/264052488743 
-콘트롤러 세트 NAVIO2 (10만원)
-https://store.emlid.com/product/navio2/ 
- 라즈베리파이 4 (4GB) 
-http://mechasolution.com/shop/goods/goods_view.php?goodsno=584667&inflow=naver&NaPm=ct%3Dk1fsmezk%7Cci%3D7ca5577f09c062b6296abfeb8cf2ed95b890a55a%7Ctr%3Dsls%7Csn%3D188145%7Chk%3D56308201a205f3b54330f36ecf444049f6b519dc
- 샌디스크 microSD Ultra A1 032GB 
-http://item.gmarket.co.kr/DetailView/Item.asp?goodscode=1655040779&GoodsSale=Y&jaehuid=200001169&NaPm=ct%3Dk1fsslzc%7Cci%3D4ef1f32bf4316c985fd177f4c5addba056f02674%7Ctr%3Dslct%7Csn%3D24%7Chk%3D363700a045cf23609b5ec3b0238ded71a37d06dd
-라즈베리파이 카메라 모듈 5MP
-http://shopping.interpark.com/product/productInfo.do?prdNo=5857692034&dispNo=016001&bizCd=P01397&NaPm=ct%3Djtc4khjk%7Cci%3D9e2014ce6c4469f43629d031ea1288a8164215e4%7Ctr%3Dsls%7Csn%3D3%7Chk%3Dfde2f5778f7a81d7fcdc46cc00ad0bba401442d4&utm_medium=affiliate&utm_source=naver&utm_campaign=shop_p11714_p01397&utm_content=price_comparison
- 라즈베리파이 케이스
-http://shopping.interpark.com/product/productInfo.do?prdNo=5746222128&dispNo=016001&bizCd=P14394&NaPm=ct%3Dk1fspgk0%7Cci%3Dacd142ae3f649da7c90b079b132404584c04b8a0%7Ctr%3Dslsl%7Csn%3D3%7Chk%3D97f88c487c548835f8bcebb0ab5956cdb978ea2f&utm_medium=affiliate&utm_source=naver&utm_campaign=shop_p11714_p14394&utm_content=deal_pc
-라즈베리 GPS/IMU (8만원)
-https://www.devicemart.co.kr/goods/view?no=1330499
-라즈베리파이 카메라 케이블 30cm
-https://www.coupang.com/vp/products/241940277?src=1032001&spec=10305201&addtag=400&ctag=241940277&lptag=768751836&itime=20190903093415&wPcid=13403192743221467351780&wRef=cr2.shopping.naver.com&wTime=20190903093415&redirect=landing&offUniversalLink=true&itemId=768751836&NaPm=ct%3Dk033ocbc%7Cci%3Dc9f5f5355bbf23f0f87f3136c1f69dcfd8d95503%7Ctr%3Dslsl%7Csn%3D613264%7Chk%3Db14c0792b530d6996853cf8765c53c5b033be29a&forceBypass=Y&vendorItemId=4940870845&sid=Naver_Shopping&pageType=PRODUCT&pageValue=241940277&isAddedCart=
-Traxxas 배터리 / YS Power 7200mAh 7.4V
-http://kymin.co.kr/goods/view?no=86115&market=naver&NaPm=ct%3Dk0d3dqk0%7Cci%3D764605b52213d660f6fc3dcaf016f691337732b3%7Ctr%3Dsls%7Csn%3D410583%7Chk%3D0c2a055141bddffd5ed13e04d52d16dcd351dbfe
-[YDLIDAR] X2 거리 측정 LiDAR Sensor
-http://www.devicemart.co.kr/goods/view?no=12170774 
-IMAX B6 80W 디지탈급속충전기
-http://www.11st.co.kr/product/SellerProductDetail.tmall?method=getSellerProductDetail&prdNo=1101509478&NaPm=ct=k034mgpk|ci=8e8ff9ac559c6f4797e1ab93c53d75f11d379187|tr=sls|sn=17703|hk=553588cb160e35d2d71f6183733779e401987824&utm_term=&utm_campaign=%B3%D7%C0%CC%B9%F6pc_%B0%A1%B0%DD%BA%F1%B1%B3%B1%E2%BA%BB&utm_source=%B3%D7%C0%CC%B9%F6_PC_PCS&utm_medium=%B0%A1%B0%DD%BA%F1%B1%B3
-리포알람 배터리 전압 측정
-http://shopping.interpark.com/product/productInfo.do?prdNo=6684810217&gclid=EAIaIQobChMIoNTd0rez5AIVhquWCh2axwXXEAQYASABEgIn1PD_BwE
-AA 충전지
-https://search.shopping.naver.com/detail/detail.nhn?cat_id=50002089&nv_mid=8188259166&query=aa+%EC%B6%A9%EC%A0%84%EC%A7%80&frm=NVSCPRO&NaPm=ct%3Dk1sis44w%7Cci%3Dd259575e371be4ac4607898537e0678dfacfd5d9%7Ctr%3Dsls%7Csn%3D95694%7Chk%3Dcb5670dd4a437b85c0527cc72e6cdfaf7e7b3433
+tcp/h264://10.3.141.1:3333 
+
+raspivid -t 0 -h 720 -w 1080 -fps 15 -b 20000 -l -o tcp://0.0.0.0:3333
+
+sudo apt install python3-opencv
+sudo pip3 install numpy
+
+pip3 install opencv-python 
+pip3 install opencv-contrib-python 
+
+sudo apt install libatlas-base-dev -y
+sudo apt install libjasper-dev  -y
+
+sudo apt remove libatlas-base-dev -y
+sudo apt remove libjasper-dev  -y

@@ -4,20 +4,5 @@ tcp/h264://10.3.141.1:3333
 
 raspivid -t 0 -h 720 -w 1080 -fps 15 -b 20000 -l -o tcp://0.0.0.0:3333
 
-sudo apt install python3-opencv
-sudo pip3 install numpy
-
-pip3 install opencv-python 
-pip3 install opencv-contrib-python 
-
-sudo apt install libatlas-base-dev -y
-sudo apt install libjasper-dev  -y
-
-sudo apt remove libatlas-base-dev -y
-sudo apt remove libjasper-dev  -y
-
-제출 방법 :
-이클라스에 사진 및 소스 제출
-과제 내용
-라즈베리카메라를 이용하여 자신의 사진을 emboss 영상 처리하세요. 
+tcp/h264://10.3.141.1:3333
 

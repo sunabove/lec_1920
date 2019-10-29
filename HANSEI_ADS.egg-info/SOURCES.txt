@@ -1,0 +1,7 @@
+README.md
+setup.py
+HANSEI_ADS.egg-info/PKG-INFO
+HANSEI_ADS.egg-info/SOURCES.txt
+HANSEI_ADS.egg-info/dependency_links.txt
+HANSEI_ADS.egg-info/requires.txt
+HANSEI_ADS.egg-info/top_level.txt

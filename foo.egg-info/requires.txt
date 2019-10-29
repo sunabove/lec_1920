@@ -1,4 +1,0 @@
-RPi.GPIO
-gpiozero
-guizero
-picamera

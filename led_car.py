@@ -1,15 +1,48 @@
 # coding: utf-8
 import curses
-from gpiozero import Robot
+from gpiozero import Robot, LED
 
 class Car( Robot ) :
+
     def __init__(self, left, right, *, pwm=True, pin_factory=None):
         print("A car is ready.")
         super().__init__( left, right, pwm, pin_factory )
+
+        self.fw_led = LED( 27 )
     pass
+
+    def forward(self, speed=1):
+        super().forward(speed)
+        self.fw_led.on()
+    pass
+
+    def backward(self, speed=1):
+        super().backward(speed)
+        self.fw_led.off()
+    pass
+
+    def left(self, speed=1):
+        super().left( speed )
+        self.fw_led.off()
+    pass
+
+    def right(self, speed=1):
+        super().right( speed )
+        self.fw_led.off()
+    pass
+
+    def reverse(self):
+        super().reverse()
+        self.fw_led.off()
+    pass
+
+    def stop(self):
+        super().stop()
+        self.fw_led.off()
+    pass
+
 pass
 
-#robot = Robot(left=(4, 14), right=(17, 18))
 car = Car(left=(22, 23), right=(9, 25))
 
 actions = {
@@ -43,6 +76,8 @@ def main(window):
     pass
 pass
 
-curses.wrapper(main)
+if __name__ == '__main__':
+    curses.wrapper(main)
+pass
 
 # end

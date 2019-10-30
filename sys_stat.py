@@ -1,4 +1,6 @@
+#!/usr/bin/python3
 # coding: utf-8
+
 from gpiozero import LED
 from time import sleep
 

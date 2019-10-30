@@ -72,10 +72,11 @@ while True:
 			print("\b-", end = '', flush=True)
 			led.off()
 			sleep( val )
-		pass
-		
-		sleep( 1 )
+		pass	
+		sleep( 1 )	
 		print("\b", end = '', flush=True)
+		led.off()
+		sleep( 0.1 )
 	pass
 
 	pass

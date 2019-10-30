@@ -1,6 +1,7 @@
 [Unit]
 Description=ADS Service
-After=multi-user.target
+After=sysinit.target
+#After=multi-user.target
 #After=network.target
 
 [Service]

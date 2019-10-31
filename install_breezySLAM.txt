@@ -1,0 +1,12 @@
+  cd ~/ads
+  git clone https://github.com/simondlevy/PyRoboViz.git
+  cd ~/ads/PyRoboViz
+  sudo python3 setup.py install
+  cd ~/ads
+  git clone https://github.com/simondlevy/BreezySLAM.git
+  cd ~/ads/BreezySLAM/python
+  sudo python3 setup.py install
+  # eye of gnome (an image viewer) install
+  sudo apt install eog
+  cd !/ads/BreezySLAM/examples
+  make pytest

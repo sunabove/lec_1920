@@ -13,4 +13,5 @@ Restart=always
 User=pi
 
 [Install]
-WantedBy=multi-user.target
+#WantedBy=multi-user.target
+WantedBy=sysinit.target

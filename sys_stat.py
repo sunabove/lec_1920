@@ -49,7 +49,7 @@ led = LED(26)
 led.off()
 
 def blink_led( count = 1 ) :	
-	interval = 0.35 
+	interval = 0.2
 	for _ in range( count ) : 
 		print("+", end = '', flush=True )
 		led.on()
@@ -79,6 +79,7 @@ while True:
 	pass
 
 	blink_led( count )
+
 	sleep( 1 )
 pass
 

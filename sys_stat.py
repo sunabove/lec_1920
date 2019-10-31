@@ -46,6 +46,21 @@ from time import sleep
 
 led = LED(26)
 
+led.off()
+
+def blink_led( count = 1 ) :	
+	interval = 0.35 
+	for _ in range( count ) : 
+		print("+", end = '', flush=True )
+		led.on()
+		sleep( interval )
+		print("\b-", end = '', flush=True)
+		led.off()
+		sleep( interval )
+		print("\b", end = '', flush=True)
+	pass
+pass
+
 print( "Press Ctrl + C to quit! ")
 
 while True:
@@ -53,32 +68,17 @@ while True:
 	ip_eth0 = get_ip( "eth0" )
 	ip_wlan0 = get_ip( "wlan0" )
 
-	intervals = [ 1, 0 ] 
+	count = 1
 
 	if not ip_eth0 and not ip_wlan0 :
-		intervals = [ 0.25, 0.25 ]
+		count = 1
 	elif not ip_eth0 and ip_wlan0 :
-		intervals = [ 1, 1 ]
+		count = 2
 	elif ip_eth0 and ip_wlan0 :
-		intervals = [ 1, 0 ]
+		count = 3
 	pass
 
-	for idx, val in enumerate( intervals ):
-		if 0 is idx%2 :
-			print("+", end = '', flush=True )
-			led.on()
-			sleep( val )
-		elif val is not 0 :
-			print("\b-", end = '', flush=True)
-			led.off()
-			sleep( val )
-		pass	
-		sleep( 1 )	
-		print("\b", end = '', flush=True)
-		led.off()
-		sleep( 0.1 )
-	pass
-
-	pass
+	blink_led( count )
+	sleep( 1 )
 pass
 

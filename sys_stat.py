@@ -17,7 +17,7 @@ def check_pkg( pkg ) :
 	pass
 pass
 
-for pkg in [ "gpiozero", "netifaces" ] :
+for pkg in [ "gpiozero", "psutil", "netifaces" ] :
 	check_pkg( pkg )
 pass
 
@@ -39,6 +39,18 @@ def get_ip( dev ) :
 	pass
 
 	return ip
+pass
+
+# check network interface
+def check_interface(interface):
+	import psutil
+	import socket
+	interface_addrs = psutil.net_if_addrs().get(interface) or []
+	v = socket.AF_INET in [snicaddr.family for snicaddr in interface_addrs]
+
+	print( "%s = %s" % ( interface, v ) )
+
+	return v
 pass
 
 from gpiozero import LED
@@ -65,8 +77,8 @@ print( "Press Ctrl + C to quit! ")
 
 while True:
 	print( "" )
-	ip_eth0 = get_ip( "eth0" )
-	ip_wlan0 = get_ip( "wlan0" )
+	ip_eth0 = check_interface( "eth0" )
+	ip_wlan0 = check_interface( "wlan0" )
 
 	count = 1
 
@@ -80,6 +92,6 @@ while True:
 
 	blink_led( count )
 
-	sleep( 1 )
+	sleep( 2 )
 pass
 

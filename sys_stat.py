@@ -53,6 +53,21 @@ def check_interface(interface):
 	return v
 pass
 
+def ping( host ) : 
+	import os
+	hostname = "google.com" #example
+	response = os.system("ping -c 1 " + hostname)
+
+	#and then check the response...
+	if response == 0:
+		print( "success: %s" % host)
+	else:
+		print( "fail : %s" % host )
+	pass
+
+	return response is 0
+pass
+
 from gpiozero import LED
 from time import sleep
 
@@ -88,6 +103,10 @@ while True:
 		count = 2
 	elif ip_eth0 and ip_wlan0 :
 		count = 3
+	pass
+
+	if ping( "google.com" ) :
+		count += 3
 	pass
 
 	blink_led( count )

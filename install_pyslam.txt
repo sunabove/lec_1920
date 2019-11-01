@@ -1,6 +1,12 @@
 cd ~/ads
 git clone https://github.com/luigifreda/pyslam.git 
 cd ~/ads/pyslam
-sudo apt install libjpeg-dev zlib1g-dev -y
+sudo apt install libjpeg-dev zlib1g-dev -y 
+
+sudo pip3 uninstall opencv-contrib-python
+sudo pip3 uninstall opencv-python
+
 sudo pip3 install opencv-contrib-python
+sudo pip3 install opencv-python
+
 sudo ./install_pip3_packages.sh

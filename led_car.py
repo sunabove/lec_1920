@@ -72,6 +72,11 @@ class Car( Robot ) :
         pass
     pass
 
+    # drive car
+    def drive(self) :
+        curses.wrapper(self.control)
+    pass
+
 pass
 
 car = Car(left=(22, 23), right=(9, 25))
@@ -84,7 +89,7 @@ actions = {
 }
 
 if __name__ == '__main__':
-    curses.wrapper(car.control)
+    car.drive()
 pass
 
 # end

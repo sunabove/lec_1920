@@ -97,12 +97,12 @@ while True:
 
 	count = 1
 
-	if not ip_eth0 and not ip_wlan0 :
-		count = 1
-	elif not ip_eth0 and ip_wlan0 :
-		count = 2
-	elif ip_eth0 and ip_wlan0 :
-		count = 3
+	if ip_wlan0 :
+		count += 1
+	pass
+
+	if ip_eth0 :
+		count += 1
 	pass
 
 	if ping( "google.com" ) :

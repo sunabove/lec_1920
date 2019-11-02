@@ -1,9 +1,24 @@
 # original document
 # https://www.deciphertechnic.com/install-opencv-python-on-raspberry-pi/
 
+# move directory to home directory
+cd ~
+
+# install 
+sudo apt install python3-opencv -y 
+sudo apt install python3-tk -y
+
+# uninstall
+sudo apt remove python3-opencv -y 
+sudo apt remove python3-tk -y
+
 # update && upgrade
 sudo apt update
 sudo apt upgrade -y
+
+sudo apt autoremove -y
+
+sync
 
 # install dependency
 sudo apt -y remove x264 libx264-dev
@@ -11,17 +26,17 @@ sudo apt -y remove x264 libx264-dev
 ## Install dependencies
 sudo apt -y install build-essential checkinstall cmake pkg-config yasm
 sudo apt -y install git gfortran
-sudo apt -y install libjpeg8-dev libjasper-dev libpng12-dev
- 
-sudo apt -y install libtiff5-dev
- 
+sudo apt -y install libjpeg8-dev libjasper-dev libpng12-dev 
+sudo apt -y install libtiff5-dev 
 sudo apt -y install libtiff-dev
  
 sudo apt -y install libavcodec-dev libavformat-dev libswscale-dev libdc1394-22-dev
 sudo apt -y install libxine2-dev libv4l-dev
+
 cd /usr/include/linux
 sudo ln -s -f ../libv4l1-videodev.h videodev.h
-cd $cwd
+
+cd 
  
 sudo apt -y install libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev
 sudo apt -y install libgtk2.0-dev libtbb-dev qt5-default
@@ -36,28 +51,29 @@ sudo apt -y install x264 v4l-utils
 sudo apt -y install libprotobuf-dev protobuf-compiler
 sudo apt -y install libgoogle-glog-dev libgflags-dev
 sudo apt -y install libgphoto2-dev libeigen3-dev libhdf5-dev doxygen
-sudo apt install build-essential libgl1-mesa-dev freeglut3-dev -y
-sudo apt install mesa-utils -y
+sudo apt -y install build-essential libgl1-mesa-dev freeglut3-dev 
+sudo apt -y install mesa-utils
 
-sudo apt install qtbase5-dev -y
-sudo apt install qtdeclarative5-dev -y
+# install qt dev
+sudo apt install qtbase5-dev qtdeclarative5-dev -y
 
 # setup python3 development tools
-sudo apt install python3 python3-setuptools python3-dev -y
+sudo apt install python3 python3-setuptools python3-dev python3-pip -y 
 
-# setup pip
-sudo apt install python3-pip
+# install numpy 
 
-# Grab OpenCV 3.4.1 and OpenCV-contrib archives
+sudo pip install numpy
+sudo pip3 install numpy
+sudo apt -y install python3-testresources
+
+sudo apt autoremove -y
+
+sync
+
+# Grab OpenCV 4.1.1 and OpenCV-contrib archives
 git clone https://github.com/opencv/opencv.git 
  
 git clone https://github.com/opencv/opencv_contrib.git 
-
-# install numpy
-	
-sudo apt -y install python3-dev python3-pip
-sudo -H pip3 install -U pip numpy
-sudo apt -y install python3-testresources
 
 # build opencv
 cd ~/opencv
@@ -70,7 +86,7 @@ cmake -D CMAKE_BUILD_TYPE=RELEASE \
             -D INSTALL_PYTHON_EXAMPLES=ON \
             -D WITH_TBB=ON \
             -D WITH_V4L=ON \
-            -D OPENCV_PYTHON3_INSTALL_PATH=$cwd/OpenCV-$cvVersion-py3/lib/python3.5/site-packages \
+            -D OPENCV_PYTHON3_INSTALL_PATH=$cwd/OpenCV-py3/lib/python3.5/site-packages \
         -D WITH_QT=ON \
         -D WITH_OPENGL=ON \
         -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules \
@@ -82,17 +98,17 @@ cmake -D CMAKE_BUILD_TYPE=RELEASE \
             -D INSTALL_PYTHON_EXAMPLES=OFF \
             -D WITH_TBB=ON \
             -D WITH_V4L=ON \
-            -D OPENCV_PYTHON3_INSTALL_PATH=$cwd/OpenCV-$cvVersion-py3/lib/python3.5/site-packages \
+            -D OPENCV_PYTHON3_INSTALL_PATH=/home/pi/OpenCV-py3/lib/python3.5/site-packages \
         -D WITH_QT=ON \
         -D WITH_OPENGL=ON \
         -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules \
         -D BUILD_EXAMPLES=ON ..
 
 # Increase swap space
-    sudo vi /etc/dphys-swapfile
-        # Change the value CONF_SWAPSIZE  variable to 1024. 
-    sudo /etc/init.d/dphys-swapfile stop
-    sudo /etc/init.d/dphys-swapfile start
+sudo vi /etc/dphys-swapfile
+    # Change the value CONF_SWAPSIZE  variable to 1024. 
+sudo /etc/init.d/dphys-swapfile stop
+sudo /etc/init.d/dphys-swapfile start
 
 # Compile and Install OpenCV
 

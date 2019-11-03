@@ -1,0 +1,8 @@
+# install raspbian pixel
+
+sudo apt update
+sudo apt upgrade -y
+sudo apt autoremove -y 
+sudo apt install raspberrypi-ui-mods rpi-chromium-mods -y
+sudo apt install realvnc-vnc-server -y
+sudo apt install xterm -y 

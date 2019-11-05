@@ -19,10 +19,15 @@ for pkg in [ "guizero" ] :
 	check_pkg( pkg )
 pass
 
-from guizero import App, Text
+from guizero import *
 app = App()
-top_text = Text(app, text="at the top", align="top")
-bottom_text = Text(app, text="at the bottom", align="bottom")
-left_text = Text(app, text="to the left", align="left")
-right_text = Text(app, text="to the right", align="right")
+
+box = Box(app, width="fill", height="fill" )
+
+top_text = Text(box, text="at the top", align="left")
+picture1 = Picture(box, image="std1.gif", grid=[0,0] )
+left_text = Text(box, text="to the left", align="right")
+
+status = Text(app, text="to the right", align="bottom")
+
 app.display()

@@ -1,3 +1,4 @@
+# coding: utf-8
 import numpy as np
 import cv2
 cap = cv2.VideoCapture(0)
@@ -21,3 +22,5 @@ while(cap.isOpened()):
 cap.release()
 out.release()
 cv2.destroyAllWindows()
+
+pass

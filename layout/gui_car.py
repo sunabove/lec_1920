@@ -2,7 +2,7 @@
 def check_pkg( pkg ) : 
 	try:
 		import importlib
-		importlib.import_module( pkg )
+		importlib.import_module( pkg.split(",")[0] )
 	except ModuleNotFoundError :
 		print( '%s is not installed, installing it now!' % pkg )
 		import sys 
@@ -11,11 +11,11 @@ def check_pkg( pkg ) :
 		except:
 			from pip._internal import main as pipmain
 		pass
-		pipmain( ['install', pkg ] )
+		pipmain( ['install', pkg.split(",")[-1] ] )
 	pass
 pass
 
-for pkg in [ "gpiozero", "Pillow" ] :
+for pkg in [ "gpiozero", "PIL,Pillow" ] :
 	check_pkg( pkg )
 pass
 
@@ -30,7 +30,7 @@ print( "Done...", flush=True )
 
 from guizero import * 
 
-app = App()
+app = App( width=720, height=665 )
 
 title_box = Box(app, width="fill", align="top", border=True)
 title = Text(title_box, text="HANSEI ADS CAR")
@@ -82,7 +82,7 @@ buttons_box = Box(app, width="fill", align="bottom", border=True)
 status = Text(buttons_box, text="status", align="left")
 
 def update_scr() :
-    print( "Update scr" ) 
+    #print( "Update scr" ) 
 
     if cap.isOpened() :
         ret, frame = cap.read()
@@ -101,7 +101,7 @@ def update_scr() :
 pass
 
 # 1000 mili sec 후에 시간을 업데이트 한다.
-#pic.after( 2000, update_scr ) 
+pic.after( 2000, update_scr ) 
 
 app.display()
 

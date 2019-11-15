@@ -19,6 +19,63 @@ for pkg in [ "gpiozero", "PIL,Pillow" ] :
 	check_pkg( pkg )
 pass
 
+# car
+
+from gpiozero import Robot, LED
+
+class Car( Robot ) :
+
+    def __init__(self, left, right, *, pwm=True, pin_factory=None):
+        print("A car is ready.")
+        super().__init__( left, right, pwm, pin_factory )
+
+        self.fw_led = LED( 21 ) # 주행등
+        self.bw_led = LED( 20 ) # 후방등
+    pass
+
+    def forward(self, speed=1):
+        super().forward(speed)
+        self.fw_led.on()
+        self.bw_led.off()
+    pass
+
+    def backward(self, speed=1):
+        super().backward(speed)
+        self.fw_led.off()
+        self.bw_led.on()
+    pass
+
+    def left(self, speed=1):
+        super().left( speed )
+        self.fw_led.off()
+        self.bw_led.off()
+    pass
+
+    def right(self, speed=1):
+        super().right( speed )
+        self.fw_led.off()
+        self.bw_led.off()
+    pass
+
+    def reverse(self):
+        super().reverse()
+        self.fw_led.off()
+        self.bw_led.off()
+    pass
+
+    def stop(self):
+        super().stop()
+        self.fw_led.off()
+        self.bw_led.off()
+    pass
+
+pass
+
+car = Car(left=(22, 23), right=(9, 25))
+
+# -- car
+
+# video open
 print( "Opening video device ....", flush=True )
 
 import cv2
@@ -27,6 +84,8 @@ from PIL import ImageTk
 
 cap = cv2.VideoCapture(0)
 print( "Done...", flush=True )
+
+# -- video open
 
 from guizero import * 
 
@@ -62,27 +121,27 @@ control_box = Box(content_box, layout="grid", border=True)
 font="Verdana 22 bold"
 
 btn = Text(control_box, grid=[0,0], text="  " )
-btn = PushButton(control_box, grid=[1,0], text=" ↑ " )
+btn = PushButton(control_box, grid=[1,0], text=" ↑ ", command=car.forward )
 btn.font = font
 btn = Text(control_box, grid=[2,0], text="  " )
 
-btn = PushButton(control_box, grid=[0,1], text="←" )
+btn = PushButton(control_box, grid=[0,1], text="←", command=car.left  )
 btn.font = font
-btn = PushButton(control_box, grid=[1,1], text=" * " )
+btn = PushButton(control_box, grid=[1,1], text=" * ", command=car.stop  )
 btn.font = font
-btn = PushButton(control_box, grid=[2,1], text="→" )
+btn = PushButton(control_box, grid=[2,1], text="→", command=car.right  )
 btn.font = font
 
 btn = Text(control_box, grid=[0,2], text="  " )
-btn = PushButton(control_box, grid=[1,2], text=" ↓ " )
+btn = PushButton(control_box, grid=[1,2], text=" ↓ ", command=car.backward  )
 btn.font = font
 btn = Text(control_box, grid=[2,2], text="  " )
 
 buttons_box = Box(app, width="fill", align="bottom", border=True)
 status = Text(buttons_box, text="status", align="left")
 
-def update_scr() :
-    #print( "Update scr" ) 
+def update_pic() :
+    #print( "Update pic" ) 
 
     if cap.isOpened() :
         ret, frame = cap.read()
@@ -97,11 +156,13 @@ def update_scr() :
         pass
     pass
 
-    pic.after( 66, update_scr ) 
+    pic.after( 66, update_pic ) 
 pass
 
+import threading
+
 # 1000 mili sec 후에 시간을 업데이트 한다.
-pic.after( 2000, update_scr ) 
+pic.repeat( 2000, update_pic ) 
 
 app.display()
 

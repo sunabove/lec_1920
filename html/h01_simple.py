@@ -23,7 +23,7 @@ table, th, td {
 <h2>Bordered Table</h2>
 <p>Use the CSS border property to add a border to the table.</p>
 
-<table style="width:100%">
+<table>
   <tr>
     <th>Firstname</th>
     <th>Lastname</th> 

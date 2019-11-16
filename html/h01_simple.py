@@ -18,6 +18,8 @@ table, th, td {
 </head>
 <body>
 
+<h2>You have visited %d times</h2>
+
 <h2>Bordered Table</h2>
 <p>Use the CSS border property to add a border to the table.</p>
 
@@ -48,6 +50,8 @@ table, th, td {
 </html>
 """
 
+visit_count = 0
+
 class StreamingHandler(server.BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == '/':
@@ -55,7 +59,10 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.send_header('Location', '/index.html')
             self.end_headers()
         elif self.path == '/index.html':
-            content = page_index.encode('utf-8')
+            global visit_count
+            visit_count += 1
+            page = page_index % visit_count
+            content = page.encode('utf-8')
             self.send_response(200)
             self.send_header('Content-Type', 'text/html')
             self.send_header('Content-Length', len(content))

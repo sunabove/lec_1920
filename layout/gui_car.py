@@ -140,12 +140,17 @@ btn = Text(control_box, grid=[2,2], text="  " )
 buttons_box = Box(app, width="fill", align="bottom", border=True)
 status = Text(buttons_box, text="status", align="left")
 
+is_updating = 0
 def update_pic() :
     #print( "Update pic" ) 
+    global is_updating
 
     if cap.isOpened() :
         ret, frame = cap.read()
-        if ret :
+        if is_updating :
+            pass
+        elif ret :
+            is_updating = 1
             frame = cv2.flip(frame,0)
             height, width, channels = frame.shape 
             pic.width = width
@@ -153,6 +158,7 @@ def update_pic() :
             img = Image.fromarray( frame )
             imgtk = ImageTk.PhotoImage(image=img)
             pic.image = imgtk
+            is_updating = 0
         pass
     pass
 

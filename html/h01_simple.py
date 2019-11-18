@@ -9,50 +9,46 @@ from http import server
 page_index="""\
 <!DOCTYPE html>
 <html>
-<head>
-<style>
-table, th, td {
-  border: 2px dotted red;
-}
-</style>
-</head>
-<body>
-
-<h2>You have visited %d times</h2>
-
-<h2>Bordered Table</h2>
-<p>Use the CSS border property to add a border to the table.</p>
-
-<table>
-  <tr>
-    <th>Firstname</th>
-    <th>Lastname</th> 
-    <th>Age</th>
-  </tr>
-  <tr>
-    <td>Jill</td>
-    <td>Smith</td>
-    <td>50</td>
-  </tr>
-  <tr>
-    <td>Eve</td>
-    <td>Jackson</td>
-    <td>94</td>
-  </tr>
-  <tr>
-    <td>John</td>
-    <td>Doe</td>
-    <td>80</td>
-  </tr>
-</table>
-
-</body>
+    <head>
+    <style>
+    table, th, td {
+      border: 2px dotted red;
+    }
+    </style>
+    </head>
+  <body>
+    <h2>You have visited %d times</h2>
+    <h2>Bordered Table</h2>
+    <p>Use the CSS border property to add a border to the table.</p>
+    <table>
+      <tr>
+        <th>Firstname</th>
+        <th>Lastname</th> 
+        <th>Age</th>
+      </tr>
+      <tr>
+        <td>Jill</td>
+        <td>Smith</td>
+        <td>50</td>
+      </tr>
+      <tr>
+        <td>Eve</td>
+        <td>Jackson</td>
+        <td>94</td>
+      </tr>
+      <tr>
+        <td>John</td>
+        <td>Doe</td>
+        <td>80</td>
+      </tr>
+    </table>
+  </body>
 </html>
 """
 
 visit_count = 0
 
-class StreamingHandler(server.BaseHTTPRequestHandler):
+class RequestHandler(server.BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == '/':
             self.send_response(301)
@@ -80,5 +76,5 @@ class WebServer(socketserver.ThreadingMixIn, server.HTTPServer, server.BaseHTTPR
     daemon_threads = True
 pass
 
-server = WebServer( ('', 80) , StreamingHandler)
+server = WebServer( ('', 80) , RequestHandler)
 server.serve_forever()

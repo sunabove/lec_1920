@@ -10,7 +10,20 @@ import socketserver
 from threading import Condition
 from http import server
 
-PAGE="""\
+page = { 
+"root" : 
+"""\
+<!DOCTYPE html>
+<html>
+<body>
+<iframe src="stream.html" style="display:block; width:100%; height:95vh;" frameborder="0" ></iframe>
+<iframe src="about:blank" width="100%" height="30" frameborder="0" style="border: 1px solid black;"></iframe>
+</body>
+</html>
+""",
+
+"index" : 
+"""\
 <html>
 <head>
 <title>Raspberry Pi Camera</title>
@@ -19,42 +32,28 @@ PAGE="""\
 <center><img src="stream.mjpg" ></center>
 </body>
 </html>
-"""
-
-class StreamingOutput(object):
-    def __init__(self):
-        self.frame = None
-        self.buffer = io.BytesIO()
-        self.condition = Condition()
-    pass
-
-    def write(self, buf):
-        if buf.startswith(b'\xff\xd8'):
-            # New frame, copy the existing buffer's content and notify all
-            # clients it's available
-            self.buffer.truncate()
-            with self.condition:
-                self.frame = self.buffer.getvalue()
-                self.condition.notify_all()
-            self.buffer.seek(0)
-        return self.buffer.write(buf)
-    pass
-pass
+""" 
+    } 
 
 class RequestHandler(server.BaseHTTPRequestHandler):
     def do_GET(self):
-        if self.path == '/':
-            self.send_response(301)
-            self.send_header('Location', '/index.html')
-            self.end_headers()
-        elif self.path == '/index.html':
-            content = PAGE.encode('utf-8')
+        path = self.path
+        print( "path: %s" % path )
+        if path in ( "", "/", "/index.html" ):
+            content = page["root"].encode('utf-8')
             self.send_response(200)
             self.send_header('Content-Type', 'text/html')
             self.send_header('Content-Length', len(content))
             self.end_headers()
             self.wfile.write(content)
-        elif self.path == '/stream.mjpg':
+        elif path == '/stream.html':
+            content = page["index"].encode('utf-8')
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/html')
+            self.send_header('Content-Length', len(content))
+            self.end_headers()
+            self.wfile.write(content)
+        elif path == '/stream.mjpg':
             self.send_response(200)
             self.send_header('Age', 0)
             self.send_header('Cache-Control', 'no-cache, private')
@@ -81,6 +80,26 @@ class RequestHandler(server.BaseHTTPRequestHandler):
             self.send_error(404)
             self.end_headers()
         pass
+    pass
+pass
+
+class StreamingOutput(object):
+    def __init__(self):
+        self.frame = None
+        self.buffer = io.BytesIO()
+        self.condition = Condition()
+    pass
+
+    def write(self, buf):
+        if buf.startswith(b'\xff\xd8'):
+            # New frame, copy the existing buffer's content and notify all
+            # clients it's available
+            self.buffer.truncate()
+            with self.condition:
+                self.frame = self.buffer.getvalue()
+                self.condition.notify_all()
+            self.buffer.seek(0)
+        return self.buffer.write(buf)
     pass
 pass
 

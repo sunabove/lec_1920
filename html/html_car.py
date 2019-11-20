@@ -17,7 +17,7 @@ page = {
 <html>
 <body>
 <iframe src="stream.html" style="display:block; width:100%; height:95vh;" frameborder="0" ></iframe>
-<iframe src="about:blank" width="100%" height="30" frameborder="0" style="border: 1px solid black;"></iframe>
+<iframe name="json" src="about:blank" width="100%" height="30" frameborder="0" style="border: 1px solid black;"></iframe>
 </body>
 </html>
 """,
@@ -30,6 +30,26 @@ page = {
 </head>
 <body>
 <center><img src="stream.mjpg" ></center>
+<br/>
+<center>
+    <table style="font-size: 24px; text-align: center;" >
+        <tr>
+            <td></td>
+            <td>
+            &uarr;
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>&larr;</td>
+            <td>&bull;</td>
+            <td>&rarr;</td>
+        </tr>
+        <tr>
+            <td></td><td>&darr;</td><td></td>
+        </tr>
+    </table>
+</center>
 </body>
 </html>
 """ 

@@ -186,20 +186,28 @@ class RequestHandler(server.BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(content)
         elif "car.json" in path :
+
+            motion = "" 
+
             if "forward" in path :
                 car.forward()
+                motion = "forward" 
             elif "backward" in path :
                 car.backward()
+                motion = "backward" 
             elif "left" in path :
                 car.left()
+                motion = "left" 
             elif "right" in path :
                 car.right()
+                motion = "right" 
             else:
-                car.stop() 
+                car.stop()
+                motion = "stop" 
             pass
 
             RequestHandler.car_req_no += 1
-            content = "car json [%d]" % RequestHandler.car_req_no
+            content = "car json [%d] : %s" % ( RequestHandler.car_req_no, motion )
             content = content.encode('utf-8')
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')

@@ -17,7 +17,7 @@ page = {
 <html>
 <body>
 <iframe src="stream.html" style="display:block; width:100%; height:95vh;" frameborder="0" ></iframe>
-<iframe name="json" src="about:blank" width="100%" height="30" frameborder="0" style="border: 1px solid black;"></iframe>
+<iframe name="action" src="about:blank" width="100%" height="30" frameborder="0" style="border: 1px solid black;"></iframe>
 </body>
 </html>
 """,
@@ -26,27 +26,50 @@ page = {
 """\
 <html>
 <head>
-<title>Raspberry Pi Camera</title>
+    <title>Raspberry Pi Camera</title>
+    <style>
+        form, input { display: inline; font-size: 24px; }
+    </style>
 </head>
 <body>
 <center><img src="stream.mjpg" ></center>
 <br/>
 <center>
-    <table style="font-size: 24px; text-align: center;" >
+    <table style="text-align: center;" border="0" >
         <tr>
             <td></td>
             <td>
-            &uarr;
+                <form target="action" action="car.json" >
+                    <input type="submit" value="&nbsp; &uarr; &nbsp;" />
+                </form>
             </td>
             <td></td>
         </tr>
         <tr>
-            <td>&larr;</td>
-            <td>&bull;</td>
-            <td>&rarr;</td>
+            <td>
+                <form target="action" action="car.json" >
+                    <input type="submit" value="&nbsp; &larr; &nbsp;" />
+                </form>
+            </td>
+            <td>
+                <form target="action" action="car.json" >
+                    <input type="submit" value="&nbsp; &bull; &nbsp;" />
+                </form>
+            </td>
+            <td>
+                <form target="action" action="car.json" >
+                    <input type="submit" value="&nbsp; &rarr; &nbsp;" />
+                </form>
+            </td>
         </tr>
         <tr>
-            <td></td><td>&darr;</td><td></td>
+            <td></td>
+            <td>
+                <form target="action" action="car.json" >
+                    <input type="submit" value="&nbsp; &darr; &nbsp;" />
+                </form>
+            </td>
+            <td></td>
         </tr>
     </table>
 </center>
@@ -55,7 +78,10 @@ page = {
 """ 
     } 
 
+car_req_no = 0 
+
 class RequestHandler(server.BaseHTTPRequestHandler):
+
     def do_GET(self):
         path = self.path
         print( "path: %s" % path )
@@ -63,6 +89,16 @@ class RequestHandler(server.BaseHTTPRequestHandler):
             content = page["root"].encode('utf-8')
             self.send_response(200)
             self.send_header('Content-Type', 'text/html')
+            self.send_header('Content-Length', len(content))
+            self.end_headers()
+            self.wfile.write(content)
+        elif "car.json" in path :
+            global car_req_no
+            car_req_no += 1
+            content = "car json [%d]" % car_req_no
+            content = content.encode('utf-8')
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
             self.send_header('Content-Length', len(content))
             self.end_headers()
             self.wfile.write(content)
@@ -112,8 +148,7 @@ class StreamingOutput(object):
 
     def write(self, buf):
         if buf.startswith(b'\xff\xd8'):
-            # New frame, copy the existing buffer's content and notify all
-            # clients it's available
+            # New frame, copy the existing buffer's content and notify all clients it's available
             self.buffer.truncate()
             with self.condition:
                 self.frame = self.buffer.getvalue()

@@ -23,6 +23,70 @@ for pkg in [ "picamera", "RPi.GPIO", "gpiozero" ] :
 	check_pkg( pkg )
 pass
 
+# car
+
+from gpiozero import Robot, LED
+
+class Car( Robot ) :
+
+    def __init__(self, left, right, *, pwm=True, pin_factory=None):
+        print("A car is ready.")
+        super().__init__( left, right, pwm, pin_factory )
+
+        self.fw_led = LED( 21 ) # 주행등
+        self.bw_led = LED( 20 ) # 후방등
+        self.lft_led = LED( 16 ) # 좌회전등
+        self.rht_led = LED( 19 ) # 우회전등
+    pass
+
+    def turn_off_all( self ) :
+        self.fw_led.off()
+        self.bw_led.off()
+        self.lft_led.off()
+        self.rht_led.off()
+    pass
+
+    def forward(self, speed=1):
+        super().forward(speed)
+        self.turn_off_all()
+        self.fw_led.on()        
+    pass
+
+    def backward(self, speed=1):
+        super().backward(speed)
+        self.turn_off_all()
+        self.bw_led.on()
+    pass
+
+    def left(self, speed=1):
+        super().left( speed )
+        self.turn_off_all()
+        self.lft_led.on()
+    pass
+
+    def right(self, speed=1):
+        super().right( speed )
+        self.turn_off_all()
+        self.rht_led.on()
+    pass
+
+    def reverse(self):
+        super().reverse()
+        self.turn_off_all()
+        self.bw_led.off()
+    pass
+
+    def stop(self):
+        super().stop()
+        self.turn_off_all()
+    pass
+
+pass
+
+car = Car(left=(22, 23), right=(9, 25))
+
+# -- car
+
 import io
 import logging
 import socketserver
@@ -102,65 +166,14 @@ page = {
 """ 
     } 
 
-# car
-
-from gpiozero import Robot, LED
-
-class Car( Robot ) :
-
-    def __init__(self, left, right, *, pwm=True, pin_factory=None):
-        print("A car is ready.")
-        super().__init__( left, right, pwm, pin_factory )
-
-        self.fw_led = LED( 21 ) # 주행등
-        self.bw_led = LED( 20 ) # 후방등
-    pass
-
-    def forward(self, speed=1):
-        super().forward(speed)
-        self.fw_led.on()
-        self.bw_led.off()
-    pass
-
-    def backward(self, speed=1):
-        super().backward(speed)
-        self.fw_led.off()
-        self.bw_led.on()
-    pass
-
-    def left(self, speed=1):
-        super().left( speed )
-        self.fw_led.off()
-        self.bw_led.off()
-    pass
-
-    def right(self, speed=1):
-        super().right( speed )
-        self.fw_led.off()
-        self.bw_led.off()
-    pass
-
-    def reverse(self):
-        super().reverse()
-        self.fw_led.off()
-        self.bw_led.off()
-    pass
-
-    def stop(self):
-        super().stop()
-        self.fw_led.off()
-        self.bw_led.off()
-    pass
-
-pass
-
-car = Car(left=(22, 23), right=(9, 25))
-
-# -- car
-
-car_req_no = 0 
-
 class RequestHandler(server.BaseHTTPRequestHandler):
+
+    car_req_no = 0 
+
+    def __init__(self, request, client_address, server):
+        super().__init__(request, client_address, server)
+        print( "RequestHandler inited." )
+    pass
 
     def do_GET(self):
         path = self.path
@@ -185,9 +198,8 @@ class RequestHandler(server.BaseHTTPRequestHandler):
                 car.stop() 
             pass
 
-            global car_req_no
-            car_req_no += 1
-            content = "car json [%d]" % car_req_no
+            RequestHandler.car_req_no += 1
+            content = "car json [%d]" % RequestHandler.car_req_no
             content = content.encode('utf-8')
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')

@@ -3,8 +3,27 @@
 # Source code from the official PiCamera package
 # http://picamera.readthedocs.io/en/latest/recipes2.html#web-streaming
 
+def check_pkg( pkg ) : 
+	try:
+		import importlib
+		importlib.import_module( pkg.split(",")[0] )
+	except ModuleNotFoundError :
+		print( '%s is not installed, installing it now!' % pkg )
+		import sys 
+		try:
+			from pip import main as pipmain
+		except:
+			from pip._internal import main as pipmain
+		pass
+		pipmain( ['install', pkg.split(",")[-1] ] )
+	pass
+pass
+
+for pkg in [ "picamera", "RPi.GPIO", "gpiozero" ] :
+	check_pkg( pkg )
+pass
+
 import io
-import picamera
 import logging
 import socketserver
 from threading import Condition
@@ -40,6 +59,7 @@ page = {
             <td></td>
             <td>
                 <form target="action" action="car.json" >
+                    <input type="hidden" name="forward" value="1" />
                     <input type="submit" value="&nbsp; &uarr; &nbsp;" />
                 </form>
             </td>
@@ -48,16 +68,19 @@ page = {
         <tr>
             <td>
                 <form target="action" action="car.json" >
+                    <input type="hidden" name="left" value="1" />
                     <input type="submit" value="&nbsp; &larr; &nbsp;" />
                 </form>
             </td>
             <td>
                 <form target="action" action="car.json" >
+                    <input type="hidden" name="stop" value="1" />
                     <input type="submit" value="&nbsp; &bull; &nbsp;" />
                 </form>
             </td>
             <td>
                 <form target="action" action="car.json" >
+                    <input type="hidden" name="right" value="1" />
                     <input type="submit" value="&nbsp; &rarr; &nbsp;" />
                 </form>
             </td>
@@ -66,6 +89,7 @@ page = {
             <td></td>
             <td>
                 <form target="action" action="car.json" >
+                    <input type="hidden" name="backward" value="1" />
                     <input type="submit" value="&nbsp; &darr; &nbsp;" />
                 </form>
             </td>
@@ -78,13 +102,69 @@ page = {
 """ 
     } 
 
+# car
+
+from gpiozero import Robot, LED
+
+class Car( Robot ) :
+
+    def __init__(self, left, right, *, pwm=True, pin_factory=None):
+        print("A car is ready.")
+        super().__init__( left, right, pwm, pin_factory )
+
+        self.fw_led = LED( 21 ) # 주행등
+        self.bw_led = LED( 20 ) # 후방등
+    pass
+
+    def forward(self, speed=1):
+        super().forward(speed)
+        self.fw_led.on()
+        self.bw_led.off()
+    pass
+
+    def backward(self, speed=1):
+        super().backward(speed)
+        self.fw_led.off()
+        self.bw_led.on()
+    pass
+
+    def left(self, speed=1):
+        super().left( speed )
+        self.fw_led.off()
+        self.bw_led.off()
+    pass
+
+    def right(self, speed=1):
+        super().right( speed )
+        self.fw_led.off()
+        self.bw_led.off()
+    pass
+
+    def reverse(self):
+        super().reverse()
+        self.fw_led.off()
+        self.bw_led.off()
+    pass
+
+    def stop(self):
+        super().stop()
+        self.fw_led.off()
+        self.bw_led.off()
+    pass
+
+pass
+
+car = Car(left=(22, 23), right=(9, 25))
+
+# -- car
+
 car_req_no = 0 
 
 class RequestHandler(server.BaseHTTPRequestHandler):
 
     def do_GET(self):
         path = self.path
-        print( "path: %s" % path )
+        logging.info( "path: %s" % path )
         if path in ( "", "/", "/index.html" ):
             content = page["root"].encode('utf-8')
             self.send_response(200)
@@ -93,6 +173,18 @@ class RequestHandler(server.BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(content)
         elif "car.json" in path :
+            if "forward" in path :
+                car.forward()
+            elif "backward" in path :
+                car.backward()
+            elif "left" in path :
+                car.left()
+            elif "right" in path :
+                car.right()
+            else:
+                car.stop() 
+            pass
+
             global car_req_no
             car_req_no += 1
             content = "car json [%d]" % car_req_no
@@ -162,6 +254,8 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
     allow_reuse_address = True
     daemon_threads = True
 pass
+
+import picamera 
 
 with picamera.PiCamera( resolution='640x480', framerate=24 ) as camera:
     output = StreamingOutput()

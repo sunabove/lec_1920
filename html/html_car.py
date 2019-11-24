@@ -98,6 +98,8 @@ page = {
 """\
 <!DOCTYPE html>
 <html>
+<head> 
+</head>
 <body>
 <iframe src="stream.html" style="display:block; width:100%; height:95vh;" frameborder="0" ></iframe>
 <iframe name="action" src="about:blank" width="100%" height="30" frameborder="0" style="border: 1px solid black;"></iframe>
@@ -109,6 +111,7 @@ page = {
 """\
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Raspberry Pi Camera</title>
     <style>
         form, input { display: inline; font-size: 24px; }

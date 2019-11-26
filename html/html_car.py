@@ -33,6 +33,9 @@ class Car( Robot ) :
         print("A car is ready.")
         super().__init__( left, right, pwm, pin_factory )
 
+        self.camera = None 
+        self.state = "STOP"
+
         self.fw_led = LED( 21 ) # 주행등
         self.bw_led = LED( 20 ) # 후방등
         self.lft_led = LED( 16 ) # 좌회전등
@@ -78,6 +81,11 @@ class Car( Robot ) :
 
     def stop(self):
         super().stop()
+        self.state = "STOP"
+        if self.camera : 
+            self.camera.annotate_text = self.state
+        pass
+
         self.turn_off_all()
     pass
 
@@ -254,6 +262,12 @@ class RequestHandler(server.BaseHTTPRequestHandler):
     pass
 pass
 
+import picamera 
+
+camera =  picamera.PiCamera( resolution='640x480', framerate=24 ) 
+camera.annotate_text = "INIT"
+car.camera = camera
+
 class StreamingOutput(object):
     def __init__(self):
         self.frame = None
@@ -278,9 +292,7 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
     daemon_threads = True
 pass
 
-import picamera 
-
-with picamera.PiCamera( resolution='640x480', framerate=24 ) as camera:
+if 1 :
     output = StreamingOutput()
     camera.rotation = 180 #Camera rotation in degrees
     camera.start_recording(output, format='mjpeg')
@@ -289,6 +301,8 @@ with picamera.PiCamera( resolution='640x480', framerate=24 ) as camera:
         server.serve_forever()
     finally:
         camera.stop_recording()
+
+        camera.close()
     pass
 pass
 

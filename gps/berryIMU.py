@@ -14,8 +14,25 @@
 #    BerryIMUv2 uses LSM9DS1 IMU
 #
 
+def check_pkg( pkg ) : 
+	try:
+		import importlib
+		importlib.import_module( pkg.split(",")[0] )
+	except ModuleNotFoundError :
+		print( '%s is not installed, installing it now!' % pkg )
+		import sys 
+		try:
+			from pip import main as pipmain
+		except:
+			from pip._internal import main as pipmain
+		pass
+		pipmain( ['install', pkg.split(",")[-1] ] )
+	pass
+pass
 
-
+for pkg in [ "smbus" ] :
+	check_pkg( pkg )
+pass
 
 import sys
 import time

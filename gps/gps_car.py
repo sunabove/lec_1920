@@ -95,6 +95,7 @@ car = Car(left=(22, 23), right=(9, 25))
 
 # -- car
 
+# html
 import io
 import logging
 import socketserver
@@ -177,6 +178,19 @@ page = {
 """ 
     } 
 
+# -- html
+
+# web
+
+import cv2
+
+cap = cv2.VideoCapture(0)
+if cap.isOpened() :
+    print( "A camera is open.")
+else :
+    print( "ERRROR: A camera is not ready!")
+pass
+
 class RequestHandler(server.BaseHTTPRequestHandler):
 
     car_req_no = 0 
@@ -240,10 +254,12 @@ class RequestHandler(server.BaseHTTPRequestHandler):
             self.send_header('Content-Type', 'multipart/x-mixed-replace; boundary=FRAME')
             self.end_headers()
             try:
-                while True:
-                    with output.condition:
-                        output.condition.wait()
-                        frame = output.frame
+                while cap.isOpened() :
+                    ret, frame = cap.read()
+                    if ret :
+                        frame = cv2.flip(frame,0)
+                        frame = cv2.line(frame,(0,0),(511,511),(255,0,0),5) 
+                        
                     pass
                     self.wfile.write(b'--FRAME\r\n')
                     self.send_header('Content-Type', 'image/jpeg')
@@ -262,47 +278,18 @@ class RequestHandler(server.BaseHTTPRequestHandler):
     pass
 pass
 
-import picamera 
-
-camera =  picamera.PiCamera( resolution='640x480', framerate=24 ) 
-camera.annotate_text = "INIT"
-car.camera = camera
-
-class StreamingOutput(object):
-    def __init__(self):
-        self.frame = None
-        self.buffer = io.BytesIO()
-        self.condition = Condition()
-    pass
-
-    def write(self, buf):
-        if buf.startswith(b'\xff\xd8'):
-            # New frame, copy the existing buffer's content and notify all clients it's available
-            self.buffer.truncate()
-            with self.condition:
-                self.frame = self.buffer.getvalue()
-                self.condition.notify_all()
-            self.buffer.seek(0)
-        return self.buffer.write(buf)
-    pass
-pass
-
-class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
+class WebServer(socketserver.ThreadingMixIn, server.HTTPServer):
     allow_reuse_address = True
     daemon_threads = True
 pass
 
 if 1 :
-    output = StreamingOutput()
-    camera.rotation = 180 #Camera rotation in degrees
-    camera.start_recording(output, format='mjpeg')
     try:
-        server = StreamingServer(('', 80), RequestHandler)
+        server = WebServer(('', 80), RequestHandler)
         server.serve_forever()
     finally:
-        camera.stop_recording()
-
-        camera.close()
+        cap.release()
     pass
 pass
 
+# -- web

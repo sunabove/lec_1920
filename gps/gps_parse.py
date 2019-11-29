@@ -27,6 +27,8 @@ def parseGPS(data): #    print "raw:", data #prints raw data
         if sdata[2] == 'V':
             print( "no satellite data available" )
             return
+        pass
+    
         print( "---Parsing GPRMC---" )
         time = sdata[1][0:2] + ":" + sdata[1][2:4] + ":" + sdata[1][4:6]
         lat = decode(sdata[3]) #latitude
@@ -56,8 +58,8 @@ import serial
 ser = serial.Serial( "/dev/serial0", baudrate = 9600, timeout = 0.5)
 count = 1
 while 1 :
-   data = ser.readline()
-   print( "[%04d] %s" % ( count, data ) )
+   data = ser.readline().decode( "utf-8")
+   #print( "[%04d] %s" % ( count, data ) )
    count += 1
    parseGPS(data)
 pass

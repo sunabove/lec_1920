@@ -121,15 +121,15 @@ from threading import Condition
 from http import server
 
 page = { 
-"root" : 
+
+"info" :
 """\
 <!DOCTYPE html>
 <html>
 <head> 
 </head>
 <body>
-<iframe src="stream.html" style="display:block; width:100%; height:95vh;" frameborder="0" ></iframe>
-<iframe name="action" src="about:blank" width="100%" height="30" frameborder="0" style="border: 1px solid black;"></iframe>
+HaNSEi Car
 </body>
 </html>
 """,
@@ -139,7 +139,7 @@ page = {
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Raspberry Pi Camera</title>
+    <title>HaNSEi Car</title>
     <style>
         form, input { display: inline; font-size: 24px; }
     </style>
@@ -191,6 +191,8 @@ page = {
         </tr>
     </table>
 </center>
+<br/>
+<iframe name="action" src="info.html" width="100%" height="30" frameborder="0" style="border: 1px solid black;"></iframe>
 </body>
 </html>
 """ 
@@ -210,14 +212,20 @@ class RequestHandler(server.BaseHTTPRequestHandler):
         path = self.path
         logging.info( "path: %s" % path )
         if path in ( "", "/", "/index.html" ):
-            content = page["root"].encode('utf-8')
+            content = page["index"].encode('utf-8')
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/html')
+            self.send_header('Content-Length', len(content))
+            self.end_headers()
+            self.wfile.write(content)
+        elif path in ( "/info.html" ):
+            content = page["info"].encode('utf-8')
             self.send_response(200)
             self.send_header('Content-Type', 'text/html')
             self.send_header('Content-Length', len(content))
             self.end_headers()
             self.wfile.write(content)
         elif "car.json" in path :
-
             motion = "" 
 
             if "forward" in path :
@@ -242,13 +250,6 @@ class RequestHandler(server.BaseHTTPRequestHandler):
             content = content.encode('utf-8')
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
-            self.send_header('Content-Length', len(content))
-            self.end_headers()
-            self.wfile.write(content)
-        elif path == '/stream.html':
-            content = page["index"].encode('utf-8')
-            self.send_response(200)
-            self.send_header('Content-Type', 'text/html')
             self.send_header('Content-Length', len(content))
             self.end_headers()
             self.wfile.write(content)

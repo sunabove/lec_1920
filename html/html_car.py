@@ -287,7 +287,7 @@ class StreamingOutput(object):
     pass
 pass
 
-class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
+class WebServer(socketserver.ThreadingMixIn, server.HTTPServer):
     allow_reuse_address = True
     daemon_threads = True
 pass
@@ -297,7 +297,7 @@ if 1 :
     camera.rotation = 180 #Camera rotation in degrees
     camera.start_recording(output, format='mjpeg')
     try:
-        server = StreamingServer(('', 80), RequestHandler)
+        server = WebServer(('', 80), RequestHandler)
         server.serve_forever()
     finally:
         camera.stop_recording()

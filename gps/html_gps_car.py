@@ -52,41 +52,59 @@ class Car( Robot ) :
     def forward(self, speed=1):
         super().forward(speed)
         self.turn_off_all()
-        self.fw_led.on()        
+        self.fw_led.on() 
+
+        self.state = "FORWARD"
+        self.paint()       
     pass
 
     def backward(self, speed=1):
         super().backward(speed)
         self.turn_off_all()
         self.bw_led.on()
+
+        self.state = "BACKWARD"
+        self.paint() 
     pass
 
     def left(self, speed=1):
         super().left( speed )
         self.turn_off_all()
         self.lft_led.on()
+
+        self.state = "LEFT"
+        self.paint() 
     pass
 
     def right(self, speed=1):
         super().right( speed )
         self.turn_off_all()
         self.rht_led.on()
+
+        self.state = "RIGHT"
+        self.paint() 
     pass
 
     def reverse(self):
         super().reverse()
         self.turn_off_all()
         self.bw_led.off()
+
+        self.state = "REVERSE"
+        self.paint() 
     pass
 
     def stop(self):
         super().stop()
+        self.turn_off_all()
         self.state = "STOP"
+        self.paint() 
+    pass
+
+    def paint(self) :
         if self.camera : 
             self.camera.annotate_text = self.state
         pass
-
-        self.turn_off_all()
     pass
 
 pass
@@ -264,12 +282,6 @@ class RequestHandler(server.BaseHTTPRequestHandler):
     pass
 pass
 
-import picamera 
-
-camera =  picamera.PiCamera( resolution='640x480', framerate=24 ) 
-camera.annotate_text = "INIT"
-car.camera = camera
-
 class StreamingOutput(object):
     def __init__(self):
         self.frame = None
@@ -294,7 +306,14 @@ class WebServer(socketserver.ThreadingMixIn, server.HTTPServer):
     daemon_threads = True
 pass
 
-if 1 :
+# camera
+
+import picamera 
+
+with picamera.PiCamera(resolution='640x480', framerate=24) as camera:
+    camera.annotate_text = "INIT"
+    car.camera = camera
+
     output = StreamingOutput()
     camera.rotation = 180 #Camera rotation in degrees
     camera.start_recording(output, format='mjpeg')

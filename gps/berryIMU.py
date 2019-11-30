@@ -16,7 +16,7 @@ def check_pkg( pkg ) :
 	pass
 pass
 
-for pkg in [ "smbus" ] :
+for pkg in [ ] :
 	check_pkg( pkg )
 pass
 

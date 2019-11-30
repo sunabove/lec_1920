@@ -1,3 +1,5 @@
+# coding: utf-8
+
 import smbus
 from LSM9DS0 import *
 from LSM9DS1 import *

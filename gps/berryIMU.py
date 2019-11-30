@@ -1,18 +1,4 @@
-#!/usr/bin/python
-#
-#    This program  reads the angles from the acceleromter, gyrscope
-#    and mangnetometeron a BerryIMU connected to a Raspberry Pi.
-#
-#    This program includes two filters (low pass and mdeian) to improve the 
-#    values returned from BerryIMU by reducing noise.
-#
-#
-#    http://ozzmaker.com/
-#    Both the BerryIMUv1 and BerryIMUv2 are supported
-#
-#    BerryIMUv1 uses LSM9DS0 IMU
-#    BerryIMUv2 uses LSM9DS1 IMU
-#
+# coding: utf-8 
 
 def check_pkg( pkg ) : 
 	try:

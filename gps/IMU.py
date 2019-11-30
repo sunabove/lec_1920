@@ -1,14 +1,11 @@
 import smbus
-bus = smbus.SMBus(1)
 from LSM9DS0 import *
 from LSM9DS1 import *
 import time
 
-
+bus = smbus.SMBus(1)
 
 LSM9DS0 = 1
-
-
 
 def detectIMU():
     #Detect which version of BerryIMU is connected.   

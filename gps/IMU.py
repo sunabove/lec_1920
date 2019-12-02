@@ -12,8 +12,8 @@ def detectIMU():
     #Detect which version of BerryIMU is connected.   
     #BerryIMUv1 uses the LSM9DS0
     #BerryIMUv2 uses the LSM9DS1
-    global LSM9DS0
-    
+
+    global LSM9DS0    
     
     try:
         #Check for LSM9DS0

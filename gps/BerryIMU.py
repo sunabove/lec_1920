@@ -172,12 +172,62 @@ class BerryIMU :
         Thread( target=self.read_imu ).start() 
     pass
 
+    def calibrate_imu( self ) : 
+        global magXmin 
+        global magYmin 
+        global magZmin 
+        global magXmax 
+        global magYmax 
+        global magZmax 
+
+        start = time.perf_counter()
+
+        cnt = 0 
+        while time.perf_counter() - start < 10 : 
+
+            cnt += 1
+
+            #Read magnetometer values
+            MAGx = IMU.readMAGx()
+            MAGy = IMU.readMAGy()
+            MAGz = IMU.readMAGz() 
+            
+            
+            if MAGx > magXmax:
+                magXmax = MAGx
+            if MAGy > magYmax:
+                magYmax = MAGy
+            if MAGz > magZmax:
+                magZmax = MAGz
+
+            if MAGx < magXmin:
+                magXmin = MAGx
+            if MAGy < magYmin:
+                magYmin = MAGy
+            if MAGz < magZmin:
+                magZmin = MAGz
+
+            print( "\b"*200)
+            
+            #slow program down a bit, makes the output more readable
+            time.sleep(0.03)            
+
+            format = "IMU Cali [%06d] magXmin  %i  magYmin  %i  magZmin  %i  ## magXmax  %i  magYmax  %i  magZmax %i"
+            print( format %(cnt, magXmin,magYmin,magZmin,magXmax,magYmax,magZmax) , end = "" ) 
+            
+        pass
+
+        print( "\nIMU calibration has completed.")
+    pass
 
     def read_imu( self ) : 
         dbg = self.dbg
 
         IMU.detectIMU()     #Detect if BerryIMUv1 or BerryIMUv2 is connected.
         IMU.initIMU()       #Initialise the accelerometer, gyroscope and compass
+
+        # calibrate IMU
+        self.calibrate_imu()
 
         gyroXangle = 0.0
         gyroYangle = 0.0

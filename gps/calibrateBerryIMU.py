@@ -18,13 +18,13 @@ import datetime
 
 
 def handle_ctrl_c(signal, frame):
-    print " "
-    print "magXmin = ",  magXmin
-    print "magYmin = ",  magYmin
-    print "magZmin = ",  magZmin
-    print "magXmax = ",  magXmax
-    print "magYmax = ",  magYmax
-    print "magZmax = ",  magZmax
+    print( " " )
+    print( "magXmin = ",  magXmin )
+    print( "magYmin = ",  magYmin )
+    print( "magZmin = ",  magZmin )
+    print( "magXmax = ",  magXmax )
+    print( "magYmax = ",  magYmax )
+    print( "magZmax = ",  magZmax )
     sys.exit(130) # 130 is standard exit code for ctrl-c
 
 
@@ -36,9 +36,6 @@ IMU.initIMU()
 signal.signal(signal.SIGINT, handle_ctrl_c)
 
 
-a = datetime.datetime.now()
-
-
 #Preload the variables used to keep track of the minimum and maximum values
 magXmin = 32767
 magYmin = 32767
@@ -48,35 +45,50 @@ magYmax = -32767
 magZmax = -32767
 
 
-    
-while True:
+def calibrate_imu( ) : 
+    global magXmin 
+    global magYmin 
+    global magZmin 
+    global magXmax 
+    global magYmax 
+    global magZmax 
 
-    #Read magnetometer values
-    MAGx = IMU.readMAGx()
-    MAGy = IMU.readMAGy()
-    MAGz = IMU.readMAGz()
-    
-    
-    
-    if MAGx > magXmax:
-        magXmax = MAGx
-    if MAGy > magYmax:
-        magYmax = MAGy
-    if MAGz > magZmax:
-        magZmax = MAGz
+    start = time.perf_counter()
 
-    if MAGx < magXmin:
-        magXmin = MAGx
-    if MAGy < magYmin:
-        magYmin = MAGy
-    if MAGz < magZmin:
-        magZmin = MAGz
+    cnt = 0 
+    while time.perf_counter() - start < 10 : 
 
-    print(" magXmin  %i  magYmin  %i  magZmin  %i  ## magXmax  %i  magYmax  %i  magZmax %i  " %(magXmin,magYmin,magZmin,magXmax,magYmax,magZmax))
+        cnt += 1
 
+        #Read magnetometer values
+        MAGx = IMU.readMAGx()
+        MAGy = IMU.readMAGy()
+        MAGz = IMU.readMAGz() 
+        
+        
+        if MAGx > magXmax:
+            magXmax = MAGx
+        if MAGy > magYmax:
+            magYmax = MAGy
+        if MAGz > magZmax:
+            magZmax = MAGz
 
+        if MAGx < magXmin:
+            magXmin = MAGx
+        if MAGy < magYmin:
+            magYmin = MAGy
+        if MAGz < magZmin:
+            magZmin = MAGz
 
-    #slow program down a bit, makes the output more readable
-    time.sleep(0.03)
+        format = "IMU Cali [%06d] magXmin  %i  magYmin  %i  magZmin  %i  ## magXmax  %i  magYmax  %i  magZmax %i"
+        print( format %(cnt, magXmin,magYmin,magZmin,magXmax,magYmax,magZmax) , end = "" )
+        
+        #slow program down a bit, makes the output more readable
+        time.sleep(0.03)
+        print( "\b"*200)
+    pass
+pass
 
-
+if __name__ == '__main__':
+    calibrate_imu( )
+pass

@@ -142,6 +142,8 @@ pass
 class BerryIMU : 
     def __init__( self ) :
         self.dbg = 1
+        self.use_curses = 0
+        self.init_curses = 0 
 
         self.gyroXangle = 0.0
         self.gyroYangle = 0.0
@@ -153,7 +155,13 @@ class BerryIMU :
 
         self.kalmanX = 0.0
         self.kalmanY = 0.0
+        pass
+    pass
 
+    def __del__(self):
+        if self.use_curses and self.init_curses :
+            import curses
+            curses.endwin() 
         pass
     pass
 
@@ -221,9 +229,6 @@ class BerryIMU :
             b = datetime.datetime.now() - a
             a = datetime.datetime.now()
             LP = b.microseconds/(1000000*1.0)
-            print( "Loop Time | %5.2f|" % ( LP ) )
-
-
 
             ############################################### 
             #### Apply low pass filter ####
@@ -409,24 +414,67 @@ class BerryIMU :
             self.roll = roll
             self.pitch = pitch
 
+            self.kalmanX = kalmanX
+            self.kalmanY = kalmanY
 
-            if dbg :			#Change to '0' to stop showing the angles from the accelerometer
-                print ("# ACCX Angle %5.2f ACCY Angle %5.2f #  " % (AccXangle, AccYangle)),
+            
 
-            if dbg :			#Change to '0' to stop  showing the angles from the gyro
-                print ("# GRYX Angle %5.2f  GYRY Angle %5.2f  GYRZ Angle %5.2f # " % (gyroXangle,gyroYangle,gyroZangle)),
 
-            if dbg:			#Change to '0' to stop  showing the angles from the complementary filter
-                print ("# CFangleX Angle %5.2f   CFangleY Angle %5.2f #" % (CFangleX,CFangleY)),
+            if not self.dbg :
+                pass
+            elif self.use_curses :
+                import curses
+
+                if not self.init_curses : 
+                    self.init_curses = 1
+                    screen = curses.initscr()
+                pass
+
+                # Update the buffer, adding text at different locations
                 
-            if dbg:			#Change to '0' to stop  showing the heading
-                print ("# HEADING %5.2f  tiltCompensatedHeading %5.2f #" % (heading,tiltCompensatedHeading)),
-                
-            if dbg:			#Change to '0' to stop  showing the angles from the Kalman filter
-                print ("# kalmanX %5.2f   kalmanY %5.2f #" % (kalmanX,kalmanY)),
+                sx = 0
+                sy = 0
+                screen.addstr(sy, sx, "Loop Time | %5.2f|" % ( LP ) )
+                sy += 1
+                screen.addstr(sy, sx, "# ACCX Angle %5.2f ACCY Angle %5.2f #  " % (AccXangle, AccYangle)) 
+                sy += 1
+                screen.addstr(sy, sx, "# GRYX Angle %5.2f  GYRY Angle %5.2f  GYRZ Angle %5.2f # " % (gyroXangle,gyroYangle,gyroZangle)) 
+                sy += 1
+                screen.addstr(sy, sx, "# CFangleX Angle %5.2f   CFangleY Angle %5.2f #" % (CFangleX,CFangleY)) 
+                sy += 1
+                screen.addstr(sy, sx, "# HEADING %5.2f  tiltCompensatedHeading %5.2f #" % (heading,tiltCompensatedHeading)) 
+                sy += 1
+                screen.addstr(sy, sx, "# kalmanX %5.2f   kalmanY %5.2f #" % (kalmanX,kalmanY)) 
+                sy += 1
+                screen.addstr(sy, sx, "" ) 
 
-            #print a new line
-            print( ""   )
+                # Changes go in to the screen buffer and only get
+                # displayed after calling `refresh()` to update
+                screen.refresh()
+                curses.napms(2000)
+            else : 
+                if dbg : 
+                    print( "Loop Time | %5.2f|" % ( LP ) )
+                pass  
+            
+                if dbg :			#Change to '0' to stop showing the angles from the accelerometer
+                    print ("# ACCX Angle %5.2f ACCY Angle %5.2f #  " % (AccXangle, AccYangle)),
+
+                if dbg :			#Change to '0' to stop  showing the angles from the gyro
+                    print ("# GRYX Angle %5.2f  GYRY Angle %5.2f  GYRZ Angle %5.2f # " % (gyroXangle,gyroYangle,gyroZangle)),
+
+                if dbg:			#Change to '0' to stop  showing the angles from the complementary filter
+                    print ("# CFangleX Angle %5.2f   CFangleY Angle %5.2f #" % (CFangleX,CFangleY)),
+                    
+                if dbg:			#Change to '0' to stop  showing the heading
+                    print ("# HEADING %5.2f  tiltCompensatedHeading %5.2f #" % (heading,tiltCompensatedHeading)),
+                    
+                if dbg:			#Change to '0' to stop  showing the angles from the Kalman filter
+                    print ("# kalmanX %5.2f   kalmanY %5.2f #" % (kalmanX,kalmanY)),
+
+                #print a new line
+                print( ""   )
+            pass
 
             #slow program down a bit, makes the output more readable
             #time.sleep(0.03)
@@ -437,5 +485,11 @@ pass
 
 if __name__ == '__main__':
     berryIMU = BerryIMU()
-    berryIMU.get_imu_data()
+    berryIMU.use_curses = 1
+    
+    try : 
+        berryIMU.get_imu_data()
+    except Exception as e:
+        print( e )
+    pass
 pass

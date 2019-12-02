@@ -47,9 +47,6 @@ def detectIMU():
 
 
 
-    
-
-
 def writeAG(register,value):
         bus.write_byte_data(ACC_ADDRESS , register, value)
         return -1

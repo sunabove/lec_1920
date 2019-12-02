@@ -73,13 +73,13 @@ class Gps :
                     self.parseGPS(str.decode( "utf-8"))
                     self.gps_cnt += 1
                 pass
-            except serial.serialutil.SerialException as e :
-                pass
             except Exception as e:
-                print( str(e) )
-                print( "Serial Device Error" )
+                if self.dbg : 
+                    print( str(e) )
+                #print( "Serial Device Error" )
                 #import time
                 #time.sleep( 1 )
+                pass
             pass
         pass
     pass 
@@ -168,12 +168,11 @@ import cv2
 class Camera(object):
     def __init__(self):
         self.video = cv2.VideoCapture(0)
-        # If you decide to use video.mp4, you must have this file in the folder
-        # as the main.py.
-        # self.video = cv2.VideoCapture('video.mp4')
+    pass
     
     def __del__(self):
         self.video.release()
+    pass
     
     def get_frame(self):
         success, img = self.video.read()

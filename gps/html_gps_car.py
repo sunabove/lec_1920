@@ -93,15 +93,23 @@ class VideoCamera(object):
         self.video.release()
     
     def get_frame(self):
-        success, image = self.video.read()
-        image = cv2.flip( image, 0 )
-        h, w, _ = image.shape
-        logging.debug( 'width: %d' % w)
-        logging.debug( 'height: %d' % h)
+        success, img = self.video.read()
+        global car 
+
+        img = cv2.flip( img, 0 )
+        h, w, _ = img.shape
+        font = cv2.FONT_HERSHEY_SIMPLEX ; fs = 0.5; ft = 1
+        x , y = 10 , 30
+        cv2.putText(img, car.state, (x, y), font, fs, (255,255,255), ft, cv2.LINE_AA)
+
+        if 0 : 
+            logging.debug( 'width: %d' % w)
+            logging.debug( 'height: %d' % h)
+        pass
         # We are using Motion JPEG, but OpenCV defaults to capture raw images,
         # so we must encode it into JPEG in order to correctly display the
         # video stream.
-        ret, jpeg = cv2.imencode('.jpg', image)
+        ret, jpeg = cv2.imencode('.jpg', img)
         return jpeg.tobytes()
     pass
 pass

@@ -20,8 +20,7 @@ pts = pts.reshape((-1,1,2))
 img = cv2.polylines(img,[pts],True,(0,255,255))
 
 # Add a text to the image
-font = cv2.FONT_HERSHEY_SIMPLEX
-cv2.putText(img,'OpenCV',(10,500), font, 4,(255,255,255),2,cv2.LINE_AA)
+
 
 cv2.imshow('frame', img)  
 

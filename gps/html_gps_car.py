@@ -32,11 +32,13 @@ import pynmea2
 
 class Gps : 
     def __init__(self):
-        self.gps_serial = serial.Serial("/dev/serial0", baudrate = 9600, timeout = 20 )
         self.gps_parse_cnt = 0
         self.lat = 0
         self.lon = 0
         self.alt = 0 
+        self.msg = None
+        self.dbg = 0
+        self.gps_cnt = 0 
     pass
 
     def parseGPS(self, str):
@@ -44,29 +46,34 @@ class Gps :
             self.gps_parse_cnt += 1
             gps_parse_cnt = self.gps_parse_cnt
             msg = pynmea2.parse(str)
-            if 1 : 
-                print( "[%04d] %s" % ( gps_parse_cnt, str ) , end ="" )
-                print( "[%04d] Timestamp: %s -- Lat: %s %s -- Lon: %s %s -- Altitude: %s %s -- Satellites: %s" % ( gps_parse_cnt, msg.timestamp,msg.lat,msg.lat_dir,msg.lon,msg.lon_dir,msg.altitude,msg.altitude_units,msg.num_sats) )
-            pass
+
+            self.msg = msg            
             self.lat = msg.lat
             self.lon = msg.lon
             self.alt = msg.altitude 
+
+            if self.dbg : 
+                print( "[%04d] %s" % ( gps_parse_cnt, str ) , end ="" )
+                print( "[%04d] Timestamp: %s -- Lat: %s %s -- Lon: %s %s -- Altitude: %s %s -- Satellites: %s" % ( gps_parse_cnt, msg.timestamp,msg.lat,msg.lat_dir,msg.lon,msg.lon_dir,msg.altitude,msg.altitude_units,msg.num_sats) )
+            pass
         pass
     pass 
 
     def read_gps_thread(self) :
         from threading import Thread
-        Thread(target=self.read_gps_impl ).start()
-        pass
+        Thread( target=self.read_gps_impl ).start() 
     pass
 
     def read_gps_impl(self) :
         while 1 :  
             try : 
-                gps_serial =self.gps_serial
-                while 1 :
+                gps_serial = serial.Serial("/dev/serial0", baudrate = 9600, timeout = 20 )
+                while gps_serial :
                     str = gps_serial.readline()
                     self.parseGPS(str.decode( "utf-8"))
+                    self.gps_cnt += 1
+                pass
+            except serial.serialutil.SerialException as e :
                 pass
             except Exception as e:
                 print( str(e) )
@@ -172,13 +179,23 @@ class Camera(object):
         success, img = self.video.read()
         global ads
         car = ads.car 
+        gps = ads.gps
 
         img = cv2.flip( img, 0 )
         h, w, _ = img.shape
         font = cv2.FONT_HERSHEY_SIMPLEX ; fs = 0.5; ft = 1
         x = 10
         y = 20
+        txt = car.state
         cv2.putText(img, car.state, (x, y), font, fs, (255,255,255), ft, cv2.LINE_AA)
+        x += 80
+        msg = gps.msg
+        if not msg :
+            txt = "No GPS"
+        else :  
+            txt = "[%06d] %s%s %s%s %s%s" % ( gps.gps_cnt, msg.lat, msg.lat_dir, msg.lon, msg.lon_dir, msg.altitude, msg.altitude_units )
+        pass
+        cv2.putText(img, txt, (x, y), font, fs, (255,255,255), ft, cv2.LINE_AA)
 
         if 0 : 
             logging.debug( 'width: %d' % w)
@@ -252,6 +269,7 @@ pass
 @app.route('/car.json') 
 def car_json():
     global ads
+    car = ads.car
     ads.req_no += 1
     motion = request.args.get('motion')
 
@@ -269,7 +287,7 @@ def car_json():
 
     return jsonify(
             motion=motion,
-            req_no = req_no,
+            req_no = ads.req_no,
         )
 pass
 

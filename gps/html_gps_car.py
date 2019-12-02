@@ -1,10 +1,8 @@
 # coding: utf-8
 
 import logging
-
-from flask import Flask, render_template, Response, jsonify
-from flask import request
-from camera import VideoCamera
+logging.basicConfig()
+logging.getLogger().setLevel(logging.DEBUG)
 
 # car
 
@@ -16,7 +14,6 @@ class Car( Robot ) :
         print("A car is ready.")
         super().__init__( left, right, pwm, pin_factory )
 
-        self.camera = None 
         self.state = "STOP"
 
         self.fw_led = LED( 21 ) # 주행등
@@ -37,8 +34,7 @@ class Car( Robot ) :
         self.turn_off_all()
         self.fw_led.on() 
 
-        self.state = "FORWARD"
-        self.paint()       
+        self.state = "FORWARD" 
     pass
 
     def backward(self, speed=1):
@@ -46,8 +42,7 @@ class Car( Robot ) :
         self.turn_off_all()
         self.bw_led.on()
 
-        self.state = "BACKWARD"
-        self.paint() 
+        self.state = "BACKWARD" 
     pass
 
     def left(self, speed=1):
@@ -55,8 +50,7 @@ class Car( Robot ) :
         self.turn_off_all()
         self.lft_led.on()
 
-        self.state = "LEFT"
-        self.paint() 
+        self.state = "LEFT" 
     pass
 
     def right(self, speed=1):
@@ -64,8 +58,7 @@ class Car( Robot ) :
         self.turn_off_all()
         self.rht_led.on()
 
-        self.state = "RIGHT"
-        self.paint() 
+        self.state = "RIGHT" 
     pass
 
     def reverse(self):
@@ -73,26 +66,51 @@ class Car( Robot ) :
         self.turn_off_all()
         self.bw_led.off()
 
-        self.state = "REVERSE"
-        self.paint() 
+        self.state = "REVERSE" 
     pass
 
     def stop(self):
         super().stop()
         self.turn_off_all()
-        self.state = "STOP"
-        self.paint() 
-    pass
-
-    def paint(self) :
-        if self.camera : 
-            self.camera.annotate_text = self.state
-        pass
-    pass
+        self.state = "STOP" 
+    pass 
 
 pass
 
 # -- car
+
+# camera
+import cv2
+
+class VideoCamera(object):
+    def __init__(self):
+        self.video = cv2.VideoCapture(0)
+        # If you decide to use video.mp4, you must have this file in the folder
+        # as the main.py.
+        # self.video = cv2.VideoCapture('video.mp4')
+    
+    def __del__(self):
+        self.video.release()
+    
+    def get_frame(self):
+        success, image = self.video.read()
+        image = cv2.flip( image, 0 )
+        h, w, _ = image.shape
+        logging.debug( 'width: %d' % w)
+        logging.debug( 'height: %d' % h)
+        # We are using Motion JPEG, but OpenCV defaults to capture raw images,
+        # so we must encode it into JPEG in order to correctly display the
+        # video stream.
+        ret, jpeg = cv2.imencode('.jpg', image)
+        return jpeg.tobytes()
+    pass
+pass
+
+# -- camera
+
+# web by flask framewwork
+from flask import Flask, render_template, Response, jsonify
+from flask import request 
 
 car = None
 camera = None
@@ -161,5 +179,8 @@ def car_json():
         )
 pass
 
+# -- web by flask framewwork
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)
+pass

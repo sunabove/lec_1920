@@ -31,8 +31,8 @@ def parseGPS(str):
         global gps_parse_cnt
         gps_parse_cnt += 1
         msg = pynmea2.parse(str)
-        print( "[%04d] %s" % ( gps_parse_cnt, str ) , end ="" )
-        print( "[%04d] Timestamp: %s -- Lat: %s %s -- Lon: %s %s -- Altitude: %s %s -- Satellites: %s" % ( gps_parse_cnt, msg.timestamp,msg.lat,msg.lat_dir,msg.lon,msg.lon_dir,msg.altitude,msg.altitude_units,msg.num_sats) )
+        #print( "[%04d] %s" % ( gps_parse_cnt, str ) , end ="" )
+        print( "[%04d] Time: %s Lat: %s %s Lon: %s %s Altitude: %s %s Satellites: %s" % ( gps_parse_cnt, msg.timestamp,msg.lat,msg.lat_dir,msg.lon,msg.lon_dir,msg.altitude,msg.altitude_units,msg.num_sats) )
     pass
 pass 
 
@@ -46,9 +46,10 @@ def read_gps() :
             pass
         except Exception as e:
             #print( str(e) )
-            print( "Serial Device Error" )
+            #print( "Serial Device Error" )
             import time
             time.sleep( 3 )
+            pass
         pass
     pass
 pass

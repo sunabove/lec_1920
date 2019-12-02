@@ -181,28 +181,57 @@ class Camera(object):
         gps = ads.gps
 
         img = cv2.flip( img, 0 )
-        h, w, _ = img.shape
-        font = cv2.FONT_HERSHEY_SIMPLEX ; fs = 0.5; ft = 1
-        x = 10
-        y = 20
-        txt = car.state
-        cv2.putText(img, car.state, (x, y), font, fs, (255,255,255), ft, cv2.LINE_AA)
-        x += 80
+        h, w, _ = img.shape # image height, width
+
+        font = cv2.FONT_HERSHEY_SIMPLEX 
+        fs = 0.4  # font size(scale)
+        ft = 1    # font thickness
+        x = 10   # text x position
+        y = 20   # text y position
+        h = 20   # line height
+
+        bg_color = (255, 255, 255) # text background color
+        fg_color = (255,   0,   0) # text foreground color
+
         msg = gps.msg
+                
         if not msg :
             txt = "No GPS"
         else :  
-            txt = "[%06d] %s%s %s%s %s%s" % ( gps.gps_cnt, msg.lat, msg.lat_dir, msg.lon, msg.lon_dir, msg.altitude, msg.altitude_units )
+            txt = "[%06d] GPS %s %s  %s %s  %s%s H" % ( gps.gps_cnt, msg.lat, msg.lat_dir, msg.lon, msg.lon_dir, msg.altitude, msg.altitude_units )
         pass
-        cv2.putText(img, txt, (x, y), font, fs, (255,255,255), ft, cv2.LINE_AA)
 
-        if 0 : 
-            logging.debug( 'width: %d' % w)
-            logging.debug( 'height: %d' % h)
-        pass
+        txt += "   " + car.state
+        cv2.putText(img, txt, (x, y), font, fs, bg_color, ft + 2, cv2.LINE_AA)
+        cv2.putText(img, txt, (x, y), font, fs, fg_color, ft    , cv2.LINE_AA)
+
+        # gyro angle text drawing
+        imu = ads.berryIMU
+        x = 10
+        y += h
+
+        txt = ""
+        format = "[%06d] GyroAngle X %5.2f  Y %5.2f  Z %5.2f   (deg.)"
+        txt +=  format % (imu.imu_cnt, imu.gyroXangle, imu.gyroYangle, imu.gyroZangle ) 
+        cv2.putText(img, txt, (x, y), font, fs, bg_color, ft + 2, cv2.LINE_AA)
+        cv2.putText(img, txt, (x, y), font, fs, fg_color, ft, cv2.LINE_AA)
+
+        # pitch, roll, yaw drawing
+        x = 10
+        y += h
+        txt = "[%06d] Pitch %5.2f  Roll %5.2f  Yaw %5.2f   (deg.)" % ( imu.imu_cnt, imu.pitch, imu.roll, imu.heading )
+        cv2.putText(img, txt, (x, y), font, fs, bg_color, ft + 2, cv2.LINE_AA)
+        cv2.putText(img, txt, (x, y), font, fs, fg_color, ft, cv2.LINE_AA)
+
+        # kalman x, y drawing
+        x = 10
+        y += h
+        txt = "[%06d] Kalman X %5.2f  Y %5.2f " % ( imu.imu_cnt, imu.kalmanX, imu.kalmanY )
+        cv2.putText(img, txt, (x, y), font, fs, bg_color, ft + 2, cv2.LINE_AA)
+        cv2.putText(img, txt, (x, y), font, fs, fg_color, ft, cv2.LINE_AA)
+
         # We are using Motion JPEG, but OpenCV defaults to capture raw images,
-        # so we must encode it into JPEG in order to correctly display the
-        # video stream.
+        # so we must encode it into JPEG in order to correctly display the video stream.
         ret, jpeg = cv2.imencode('.jpg', img)
         return jpeg.tobytes()
     pass
@@ -214,16 +243,20 @@ pass
 from flask import Flask, render_template, Response, jsonify
 from flask import request 
 
+from BerryIMU import BerryIMU
+
 class AdsSystem :
     def __init__( self ) :
         self.gps = Gps()
         self.camera = Camera()
         self.car = Car(left=(22, 23), right=(9, 25))
+        self.berryIMU = BerryIMU()
         self.req_no = 0
     pass
 
     def initSystem(self) : 
         self.gps.read_gps_thread()
+        self.berryIMU.read_imu_thread()
     pass
 pass
 

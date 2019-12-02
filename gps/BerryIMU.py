@@ -72,6 +72,8 @@ class BerryIMU :
         self.use_curses = 0
         self.init_curses = 0 
 
+        self.imu_cnt = 0 
+
         self.gyroXangle = 0.0
         self.gyroYangle = 0.0
         self.gyroZangle = 0.0
@@ -165,9 +167,13 @@ class BerryIMU :
     pass
 
 
+    def read_imu_thread(self) :
+        from threading import Thread
+        Thread( target=self.read_imu ).start() 
+    pass
 
 
-    def get_imu_data( self ) : 
+    def read_imu( self ) : 
         dbg = self.dbg
 
         IMU.detectIMU()     #Detect if BerryIMUv1 or BerryIMUv2 is connected.
@@ -209,6 +215,8 @@ class BerryIMU :
         a = datetime.datetime.now()
 
         while 1 :
+            self.imu_cnt += 1
+
             #Read the accelerometer,gyroscope and magnetometer values
             ACCx = IMU.readACCx()
             ACCy = IMU.readACCy()
@@ -492,7 +500,7 @@ if __name__ == '__main__':
     berryIMU.dbg = 1
     
     try : 
-        berryIMU.get_imu_data()
+        berryIMU.read_imu()
     except Exception as e:
         print( e )
     pass

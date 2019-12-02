@@ -1,8 +1,84 @@
 # coding: utf-8
 
+def check_pkg( pkg ) : 
+	try:
+		import importlib
+		mode_name = pkg.split(",")[0].strip() 
+		importlib.import_module( mode_name )
+	except ModuleNotFoundError :
+		print( '%s is not installed, installing it now!' % mode_name )
+		import sys 
+		try:
+			from pip import main as pipmain
+		except:
+			from pip._internal import main as pipmain
+		pass
+		pipmain( ['install', pkg.split(",")[-1].strip() ] )
+	pass
+pass
+
+for pkg in [ "serial, pyserial", "pynmea2" ] :
+	check_pkg( pkg )
+pass
+
 import logging
 logging.basicConfig()
 logging.getLogger().setLevel(logging.DEBUG)
+
+# gps
+
+import serial
+import pynmea2
+
+class Gps : 
+    def __init__(self):
+        self.gps_serial = serial.Serial("/dev/serial0", baudrate = 9600, timeout = 20 )
+        self.gps_parse_cnt = 0
+        self.lat = 0
+        self.lon = 0
+        self.alt = 0 
+    pass
+
+    def parseGPS(self, str):
+        if 'GGA' in str :
+            self.gps_parse_cnt += 1
+            gps_parse_cnt = self.gps_parse_cnt
+            msg = pynmea2.parse(str)
+            if 1 : 
+                print( "[%04d] %s" % ( gps_parse_cnt, str ) , end ="" )
+                print( "[%04d] Timestamp: %s -- Lat: %s %s -- Lon: %s %s -- Altitude: %s %s -- Satellites: %s" % ( gps_parse_cnt, msg.timestamp,msg.lat,msg.lat_dir,msg.lon,msg.lon_dir,msg.altitude,msg.altitude_units,msg.num_sats) )
+            pass
+            self.lat = msg.lat
+            self.lon = msg.lon
+            self.alt = msg.altitude 
+        pass
+    pass 
+
+    def read_gps_thread(self) :
+        from threading import Thread
+        Thread(target=self.read_gps_impl ).start()
+        pass
+    pass
+
+    def read_gps_impl(self) :
+        while 1 :  
+            try : 
+                gps_serial =self.gps_serial
+                while 1 :
+                    str = gps_serial.readline()
+                    self.parseGPS(str.decode( "utf-8"))
+                pass
+            except Exception as e:
+                print( str(e) )
+                print( "Serial Device Error" )
+                #import time
+                #time.sleep( 1 )
+            pass
+        pass
+    pass 
+pass
+
+# -- gps
 
 # car
 
@@ -82,7 +158,7 @@ pass
 # camera
 import cv2
 
-class VideoCamera(object):
+class Camera(object):
     def __init__(self):
         self.video = cv2.VideoCapture(0)
         # If you decide to use video.mp4, you must have this file in the folder
@@ -94,12 +170,14 @@ class VideoCamera(object):
     
     def get_frame(self):
         success, img = self.video.read()
-        global car 
+        global ads
+        car = ads.car 
 
         img = cv2.flip( img, 0 )
         h, w, _ = img.shape
         font = cv2.FONT_HERSHEY_SIMPLEX ; fs = 0.5; ft = 1
-        x , y = 10 , 30
+        x = 10
+        y = 20
         cv2.putText(img, car.state, (x, y), font, fs, (255,255,255), ft, cv2.LINE_AA)
 
         if 0 : 
@@ -120,20 +198,36 @@ pass
 from flask import Flask, render_template, Response, jsonify
 from flask import request 
 
-car = None
-camera = None
-req_no = 0
+class AdsSystem :
+    def __init__( self ) :
+        self.gps = Gps()
+        self.camera = Camera()
+        self.car = Car(left=(22, 23), right=(9, 25))
+        self.req_no = 0
+    pass
+
+    def initSystem(self) : 
+        self.gps.read_gps_thread()
+    pass
+pass
+
+ads = None 
 app = Flask(__name__)
 
 def init_system() :
-    global car
-    if not car :
-        car = Car(left=(22, 23), right=(9, 25))
-    pass
+    global ads
+    if not ads :
+        ads = AdsSystem()
+        ads.initSystem()
+    pass 
+pass
 
-    global camera
-    if not camera :
-        camera = VideoCamera()
+def gen(camera):
+    global ads 
+    while True:
+        frame = ads.camera.get_frame()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
     pass
 pass
 
@@ -145,28 +239,20 @@ pass
 
 @app.route('/info.html')
 def info():
-    init_system
+    init_system()
     return render_template('info.html')
-pass
-
-def gen(camera):
-    while True:
-        frame = camera.get_frame()
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
-    pass
 pass
 
 @app.route('/video_feed')
 def video_feed():
     init_system()
-    return Response(gen(camera), mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(gen(ads.camera), mimetype='multipart/x-mixed-replace; boundary=frame')
 pass
 
 @app.route('/car.json') 
 def car_json():
-    global req_no
-    req_no += 1
+    global ads
+    ads.req_no += 1
     motion = request.args.get('motion')
 
     if "forward" == motion :

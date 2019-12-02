@@ -307,15 +307,4 @@ def initIMU():
         writeMAG(LSM9DS1_CTRL_REG3_M, 0b00000000)   #continuos update
         writeMAG(LSM9DS1_CTRL_REG4_M, 0b00000000)   #lower power mode for Z axis
 
-
-
-
-
-
-
-
-
-
-
-
-
+pass

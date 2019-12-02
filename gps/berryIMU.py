@@ -141,10 +141,12 @@ pass
 
 class BerryImu : 
     def __init__( self ) :
+        self.dbg = 1
         pass
     pass
 
     def get_imu_data( self ) : 
+        dbg = self.dbg
 
         IMU.detectIMU()     #Detect if BerryIMUv1 or BerryIMUv2 is connected.
         IMU.initIMU()       #Initialise the accelerometer, gyroscope and compass
@@ -381,19 +383,19 @@ class BerryImu :
             ############################ END ##################################
 
 
-            if 1:			#Change to '0' to stop showing the angles from the accelerometer
+            if dbg :			#Change to '0' to stop showing the angles from the accelerometer
                 print ("# ACCX Angle %5.2f ACCY Angle %5.2f #  " % (AccXangle, AccYangle)),
 
-            if 1:			#Change to '0' to stop  showing the angles from the gyro
+            if dbg :			#Change to '0' to stop  showing the angles from the gyro
                 print ("\t# GRYX Angle %5.2f  GYRY Angle %5.2f  GYRZ Angle %5.2f # " % (gyroXangle,gyroYangle,gyroZangle)),
 
-            if 1:			#Change to '0' to stop  showing the angles from the complementary filter
+            if dbg:			#Change to '0' to stop  showing the angles from the complementary filter
                 print ("\t# CFangleX Angle %5.2f   CFangleY Angle %5.2f #" % (CFangleX,CFangleY)),
                 
-            if 1:			#Change to '0' to stop  showing the heading
+            if dbg:			#Change to '0' to stop  showing the heading
                 print ("\t# HEADING %5.2f  tiltCompensatedHeading %5.2f #" % (heading,tiltCompensatedHeading)),
                 
-            if 1:			#Change to '0' to stop  showing the angles from the Kalman filter
+            if dbg:			#Change to '0' to stop  showing the angles from the Kalman filter
                 print ("# kalmanX %5.2f   kalmanY %5.2f #" % (kalmanX,kalmanY)),
 
             #print a new line

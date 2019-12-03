@@ -295,9 +295,11 @@ def gen(camera):
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
     pass
-pass
+pass 
 
-@app.route('/')
+@app.route( '/' )
+@app.route( '/index.html' )
+@app.route( '/index.htm' )
 def index():
     init_system()
     return render_template('index.html')

@@ -221,7 +221,7 @@ class Camera(object):
         y += h
 
         txt = ""
-        format = "[%06d] GyroAngle X %5.2f   Y %5.2f   Z %5.2f   (deg.)"
+        format = "[%06d] GyroAngle X %5.2f   Y %5.2f   Z %5.2f   (deg)"
         txt +=  format % (imu.imu_cnt, self.degree( imu.gyroXangle ), self.degree( imu.gyroYangle ), self.degree( imu.gyroZangle ) ) 
         cv2.putText(img, txt, (x, y), font, fs, bg_color, ft + 2, cv2.LINE_AA)
         cv2.putText(img, txt, (x, y), font, fs, fg_color, ft, cv2.LINE_AA)
@@ -229,7 +229,7 @@ class Camera(object):
         # pitch, roll, yaw drawing
         x = 10
         y += h
-        format = "[%06d] Pitch %5.2f   Roll %5.2f   Yaw %5.2f   (deg.)"
+        format = "[%06d] Pitch %5.2f   Roll %5.2f   Yaw %5.2f   (deg)"
         txt = format % ( imu.imu_cnt, self.degree( imu.pitch_deg ), self.degree( imu.roll_deg ), self.degree( imu.yaw_deg ) )
         cv2.putText(img, txt, (x, y), font, fs, bg_color, ft + 2, cv2.LINE_AA)
         cv2.putText(img, txt, (x, y), font, fs, fg_color, ft, cv2.LINE_AA)
@@ -259,6 +259,7 @@ from BerryIMU import BerryIMU
 
 class AdsSystem :
     def __init__( self ) :
+        self.init = 0 
         self.gps = Gps()
         self.camera = Camera()
         self.car = Car(left=(22, 23), right=(9, 25))
@@ -267,8 +268,12 @@ class AdsSystem :
     pass
 
     def initSystem(self) : 
-        self.gps.read_gps_thread()
-        self.berryIMU.read_imu_thread()
+        if not self.init :
+            self.init = 1
+            self.gps.read_gps_thread()
+            self.berryIMU.read_imu_thread()
+            self.init = 2
+        pass
     pass
 pass
 

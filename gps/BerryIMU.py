@@ -71,6 +71,7 @@ class BerryIMU :
         self.dbg = 0
         self.use_curses = 0
         self.init_curses = 0 
+        self.calibrated = 0 
 
         self.imu_cnt = 0 
 
@@ -178,6 +179,15 @@ class BerryIMU :
     pass
 
     def calibrate_imu( self ) : 
+        if 1 == self.calibrated : # 캘리브레이션 중이면 중복으로 캘리하지 않는다.
+            return
+        pass
+
+        self.calibrated = 1 
+
+        IMU.detectIMU()     #Detect if BerryIMUv1 or BerryIMUv2 is connected.
+        IMU.initIMU()       #Initialise the accelerometer, gyroscope and compass 
+
         global magXmin 
         global magYmin 
         global magZmin 
@@ -232,7 +242,11 @@ class BerryIMU :
         IMU.initIMU()       #Initialise the accelerometer, gyroscope and compass
 
         # calibrate IMU
-        self.calibrate_imu()
+        if not self.calibrated : 
+            self.calibrate_imu()
+
+            self.calibrated = 2
+        pass
 
         gyroXangle = 0.0
         gyroYangle = 0.0

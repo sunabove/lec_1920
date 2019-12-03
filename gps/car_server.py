@@ -178,7 +178,7 @@ class Camera(object):
     def degree( self, angle_deg ) :
         angle_deg = angle_deg % 360
         if angle_deg > 180 :
-            angle_deg = 360 - angle_deg
+            angle_deg = angle_deg - 360
         pass
 
         return angle_deg

@@ -207,12 +207,12 @@ class BerryIMU :
             if MAGz < magZmin:
                 magZmin = MAGz
 
-            print( "\b"*200)
+            print( "\b"*100)
             
             #slow program down a bit, makes the output more readable
             time.sleep(0.03)            
 
-            format = "IMU Cali [%06d] magXmin  %i  magYmin  %i  magZmin  %i  ## magXmax  %i  magYmax  %i  magZmax %i"
+            format = "IMU Cali [%06d] Mag Xmin  %i  Ymin  %i  Zmin  %i  ## Xmax  %i  Ymax  %i  Zmax %i"
             print( format %(cnt, magXmin,magYmin,magZmin,magXmax,magYmax,magZmax) , end = "" ) 
             
         pass

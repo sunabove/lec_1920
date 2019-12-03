@@ -211,22 +211,24 @@ class Camera(object):
         y += h
 
         txt = ""
-        format = "[%06d] GyroAngle X %5.2f  Y %5.2f  Z %5.2f   (deg.)"
-        txt +=  format % (imu.imu_cnt, imu.gyroXangle, imu.gyroYangle, imu.gyroZangle ) 
+        format = "[%06d] GyroAngle X %5.2f   Y %5.2f   Z %5.2f   (deg.)"
+        txt +=  format % (imu.imu_cnt, imu.gyroXangle%360, imu.gyroYangle%360, imu.gyroZangle%360 ) 
         cv2.putText(img, txt, (x, y), font, fs, bg_color, ft + 2, cv2.LINE_AA)
         cv2.putText(img, txt, (x, y), font, fs, fg_color, ft, cv2.LINE_AA)
 
         # pitch, roll, yaw drawing
         x = 10
         y += h
-        txt = "[%06d] Pitch %5.2f  Roll %5.2f  Yaw %5.2f   (deg.)" % ( imu.imu_cnt, imu.pitch, imu.roll, imu.heading )
+        format = "[%06d] Pitch %5.2f   Roll %5.2f   Yaw %5.2f   (deg.)"
+        txt = format % ( imu.imu_cnt%360, imu.pitch_deg%360, imu.roll_deg%360, imu.yaw_deg%360 )
         cv2.putText(img, txt, (x, y), font, fs, bg_color, ft + 2, cv2.LINE_AA)
         cv2.putText(img, txt, (x, y), font, fs, fg_color, ft, cv2.LINE_AA)
 
         # kalman x, y drawing
         x = 10
         y += h
-        txt = "[%06d] Kalman X %5.2f  Y %5.2f " % ( imu.imu_cnt, imu.kalmanX, imu.kalmanY )
+        format = "[%06d] Kalman X %5.2f   Y %5.2f "
+        txt = format % ( imu.imu_cnt, imu.kalmanX, imu.kalmanY )
         cv2.putText(img, txt, (x, y), font, fs, bg_color, ft + 2, cv2.LINE_AA)
         cv2.putText(img, txt, (x, y), font, fs, fg_color, ft, cv2.LINE_AA)
 

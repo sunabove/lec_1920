@@ -81,6 +81,11 @@ class BerryIMU :
         self.heading = 0.0
         self.pitch = 0.0
         self.roll = 0.0
+        self.yaw = 0.0
+
+        self.pitch_deg = 0.0
+        self.roll_deg = 0.0
+        self.yaw_deg = 0.0
 
         self.kalmanX = 0.0
         self.kalmanY = 0.0
@@ -264,281 +269,294 @@ class BerryIMU :
 
         a = datetime.datetime.now()
 
+        processing = 0 
         while 1 :
-            self.imu_cnt += 1
+            if not processing : 
+                processing = 1 
 
-            #Read the accelerometer,gyroscope and magnetometer values
-            ACCx = IMU.readACCx()
-            ACCy = IMU.readACCy()
-            ACCz = IMU.readACCz()
-            GYRx = IMU.readGYRx()
-            GYRy = IMU.readGYRy()
-            GYRz = IMU.readGYRz()
-            MAGx = IMU.readMAGx()
-            MAGy = IMU.readMAGy()
-            MAGz = IMU.readMAGz()
+                self.imu_cnt += 1
 
-
-            #Apply compass calibration    
-            MAGx -= (magXmin + magXmax) /2 
-            MAGy -= (magYmin + magYmax) /2 
-            MAGz -= (magZmin + magZmax) /2 
-        
-
-            ##Calculate loop Period(LP). How long between Gyro Reads
-            b = datetime.datetime.now() - a
-            a = datetime.datetime.now()
-            LP = b.microseconds/(1000000*1.0)
-
-            ############################################### 
-            #### Apply low pass filter ####
-            ###############################################
-            MAGx =  MAGx  * MAG_LPF_FACTOR + oldXMagRawValue*(1 - MAG_LPF_FACTOR)
-            MAGy =  MAGy  * MAG_LPF_FACTOR + oldYMagRawValue*(1 - MAG_LPF_FACTOR)
-            MAGz =  MAGz  * MAG_LPF_FACTOR + oldZMagRawValue*(1 - MAG_LPF_FACTOR)
-            ACCx =  ACCx  * ACC_LPF_FACTOR + oldXAccRawValue*(1 - ACC_LPF_FACTOR)
-            ACCy =  ACCy  * ACC_LPF_FACTOR + oldYAccRawValue*(1 - ACC_LPF_FACTOR)
-            ACCz =  ACCz  * ACC_LPF_FACTOR + oldZAccRawValue*(1 - ACC_LPF_FACTOR)
-
-            oldXMagRawValue = MAGx
-            oldYMagRawValue = MAGy
-            oldZMagRawValue = MAGz
-            oldXAccRawValue = ACCx
-            oldYAccRawValue = ACCy
-            oldZAccRawValue = ACCz
-
-            ######################################### 
-            #### Median filter for accelerometer ####
-            #########################################
-            # cycle the table
-            for x in range (ACC_MEDIANTABLESIZE-1,0,-1 ):
-                acc_medianTable1X[x] = acc_medianTable1X[x-1]
-                acc_medianTable1Y[x] = acc_medianTable1Y[x-1]
-                acc_medianTable1Z[x] = acc_medianTable1Z[x-1]
-
-            # Insert the lates values
-            acc_medianTable1X[0] = ACCx
-            acc_medianTable1Y[0] = ACCy
-            acc_medianTable1Z[0] = ACCz    
-
-            # Copy the tables
-            acc_medianTable2X = acc_medianTable1X[:]
-            acc_medianTable2Y = acc_medianTable1Y[:]
-            acc_medianTable2Z = acc_medianTable1Z[:]
-
-            # Sort table 2
-            acc_medianTable2X.sort()
-            acc_medianTable2Y.sort()
-            acc_medianTable2Z.sort()
-
-            # The middle value is the value we are interested in
-            ACCx = acc_medianTable2X[int( ACC_MEDIANTABLESIZE/2 )]
-            ACCy = acc_medianTable2Y[int( ACC_MEDIANTABLESIZE/2 )]
-            ACCz = acc_medianTable2Z[int( ACC_MEDIANTABLESIZE/2 )]
+                #Read the accelerometer,gyroscope and magnetometer values
+                ACCx = IMU.readACCx()
+                ACCy = IMU.readACCy()
+                ACCz = IMU.readACCz()
+                GYRx = IMU.readGYRx()
+                GYRy = IMU.readGYRy()
+                GYRz = IMU.readGYRz()
+                MAGx = IMU.readMAGx()
+                MAGy = IMU.readMAGy()
+                MAGz = IMU.readMAGz()
 
 
-
-            ######################################### 
-            #### Median filter for magnetometer ####
-            #########################################
-            # cycle the table
-            for x in range (MAG_MEDIANTABLESIZE-1,0,-1 ):
-                mag_medianTable1X[x] = mag_medianTable1X[x-1]
-                mag_medianTable1Y[x] = mag_medianTable1Y[x-1]
-                mag_medianTable1Z[x] = mag_medianTable1Z[x-1]
-
-            # Insert the latest values    
-            mag_medianTable1X[0] = MAGx
-            mag_medianTable1Y[0] = MAGy
-            mag_medianTable1Z[0] = MAGz    
-
-            # Copy the tables
-            mag_medianTable2X = mag_medianTable1X[:]
-            mag_medianTable2Y = mag_medianTable1Y[:]
-            mag_medianTable2Z = mag_medianTable1Z[:]
-
-            # Sort table 2
-            mag_medianTable2X.sort()
-            mag_medianTable2Y.sort()
-            mag_medianTable2Z.sort()
-
-            # The middle value is the value we are interested in
-            MAGx = mag_medianTable2X[int( MAG_MEDIANTABLESIZE/2 )]
-            MAGy = mag_medianTable2Y[int( MAG_MEDIANTABLESIZE/2 )]
-            MAGz = mag_medianTable2Z[int( MAG_MEDIANTABLESIZE/2 )]
-
-
-
-            #Convert Gyro raw to degrees per second
-            rate_gyr_x =  GYRx * G_GAIN
-            rate_gyr_y =  GYRy * G_GAIN
-            rate_gyr_z =  GYRz * G_GAIN
-
-
-            #Calculate the angles from the gyro. 
-            gyroXangle+=rate_gyr_x*LP
-            gyroYangle+=rate_gyr_y*LP
-            gyroZangle+=rate_gyr_z*LP
-
-            #Convert Accelerometer values to degrees
-
-            if not IMU_UPSIDE_DOWN:
-                # If the IMU is up the correct way (Skull logo facing down), use these calculations
-                AccXangle =  (math.atan2(ACCy,ACCz)*RAD_TO_DEG)
-                AccYangle =  (math.atan2(ACCz,ACCx)+M_PI)*RAD_TO_DEG
-            else:
-                #Us these four lines when the IMU is upside down. Skull logo is facing up
-                AccXangle =  (math.atan2(-ACCy,-ACCz)*RAD_TO_DEG)
-                AccYangle =  (math.atan2(-ACCz,-ACCx)+M_PI)*RAD_TO_DEG
-
-
-
-            #Change the rotation value of the accelerometer to -/+ 180 and
-            #move the Y axis '0' point to up.  This makes it easier to read.
-            if AccYangle > 90:
-                AccYangle -= 270.0
-            else:
-                AccYangle += 90.0
-            pass
-
-
-
-            #Complementary filter used to combine the accelerometer and gyro values.
-            CFangleX=AA*(CFangleX+rate_gyr_x*LP) +(1 - AA) * AccXangle
-            CFangleY=AA*(CFangleY+rate_gyr_y*LP) +(1 - AA) * AccYangle
-
-            #Kalman filter used to combine the accelerometer and gyro values.
-            kalmanY = self.kalmanFilterY(AccYangle, rate_gyr_y,LP)
-            kalmanX = self.kalmanFilterX(AccXangle, rate_gyr_x,LP)
-
-            if IMU_UPSIDE_DOWN:
-                MAGy = -MAGy      #If IMU is upside down, this is needed to get correct heading.
-            pass
-
-            #Calculate heading
-            heading = 180 * math.atan2(MAGy,MAGx)/M_PI
-
-            #Only have our heading between 0 and 360
-            if heading < 0:
-                heading += 360
-            pass
-
-
-
-            ####################################################################
-            ###################Tilt compensated heading#########################
-            ####################################################################
-            #Normalize accelerometer raw values.
-            if not IMU_UPSIDE_DOWN:        
-                #Use these two lines when the IMU is up the right way. Skull logo is facing down
-                accXnorm = ACCx/math.sqrt(ACCx * ACCx + ACCy * ACCy + ACCz * ACCz)
-                accYnorm = ACCy/math.sqrt(ACCx * ACCx + ACCy * ACCy + ACCz * ACCz)
-            else:
-                #Us these four lines when the IMU is upside down. Skull logo is facing up
-                accXnorm = -ACCx/math.sqrt(ACCx * ACCx + ACCy * ACCy + ACCz * ACCz)
-                accYnorm = ACCy/math.sqrt(ACCx * ACCx + ACCy * ACCy + ACCz * ACCz)
-
-            #Calculate pitch and roll
-
-            pitch = math.asin(accXnorm)
-            roll = -math.asin(accYnorm/math.cos(pitch))
-
-
-            #Calculate the new tilt compensated values
-            magXcomp = MAGx*math.cos(pitch)+MAGz*math.sin(pitch)
-        
-            #The compass and accelerometer are orientated differently on the LSM9DS0 and LSM9DS1 and the Z axis on the compass
-            #is also reversed. This needs to be taken into consideration when performing the calculations
-            if(IMU.LSM9DS0):
-                magYcomp = MAGx*math.sin(roll)*math.sin(pitch)+MAGy*math.cos(roll)-MAGz*math.sin(roll)*math.cos(pitch)   #LSM9DS0
-            else:
-                magYcomp = MAGx*math.sin(roll)*math.sin(pitch)+MAGy*math.cos(roll)+MAGz*math.sin(roll)*math.cos(pitch)   #LSM9DS1
-            pass
-
-
-
-
-            #Calculate tilt compensated heading
-            tiltCompensatedHeading = 180 * math.atan2(magYcomp,magXcomp)/M_PI
-
-            if tiltCompensatedHeading < 0:
-                tiltCompensatedHeading += 360
-            pass
-
-            ############################ END ##################################
-
-            self.gyroXangle = gyroXangle
-            self.gyroYangle = gyroYangle
-            self.gyroZangle = gyroZangle
-
-            self.heading = heading
-            self.roll = roll
-            self.pitch = pitch
-
-            self.kalmanX = kalmanX
-            self.kalmanY = kalmanY
-
+                #Apply compass calibration    
+                MAGx -= (magXmin + magXmax) /2 
+                MAGy -= (magYmin + magYmax) /2 
+                MAGz -= (magZmin + magZmax) /2 
             
 
+                ##Calculate loop Period(LP). How long between Gyro Reads
+                b = datetime.datetime.now() - a
+                a = datetime.datetime.now()
+                LP = b.microseconds/(1000000*1.0)
 
-            if not self.dbg :
+                ############################################### 
+                #### Apply low pass filter ####
+                ###############################################
+                MAGx =  MAGx  * MAG_LPF_FACTOR + oldXMagRawValue*(1 - MAG_LPF_FACTOR)
+                MAGy =  MAGy  * MAG_LPF_FACTOR + oldYMagRawValue*(1 - MAG_LPF_FACTOR)
+                MAGz =  MAGz  * MAG_LPF_FACTOR + oldZMagRawValue*(1 - MAG_LPF_FACTOR)
+                ACCx =  ACCx  * ACC_LPF_FACTOR + oldXAccRawValue*(1 - ACC_LPF_FACTOR)
+                ACCy =  ACCy  * ACC_LPF_FACTOR + oldYAccRawValue*(1 - ACC_LPF_FACTOR)
+                ACCz =  ACCz  * ACC_LPF_FACTOR + oldZAccRawValue*(1 - ACC_LPF_FACTOR)
+
+                oldXMagRawValue = MAGx
+                oldYMagRawValue = MAGy
+                oldZMagRawValue = MAGz
+                oldXAccRawValue = ACCx
+                oldYAccRawValue = ACCy
+                oldZAccRawValue = ACCz
+
+                ######################################### 
+                #### Median filter for accelerometer ####
+                #########################################
+                # cycle the table
+                for x in range (ACC_MEDIANTABLESIZE-1,0,-1 ):
+                    acc_medianTable1X[x] = acc_medianTable1X[x-1]
+                    acc_medianTable1Y[x] = acc_medianTable1Y[x-1]
+                    acc_medianTable1Z[x] = acc_medianTable1Z[x-1]
+
+                # Insert the lates values
+                acc_medianTable1X[0] = ACCx
+                acc_medianTable1Y[0] = ACCy
+                acc_medianTable1Z[0] = ACCz    
+
+                # Copy the tables
+                acc_medianTable2X = acc_medianTable1X[:]
+                acc_medianTable2Y = acc_medianTable1Y[:]
+                acc_medianTable2Z = acc_medianTable1Z[:]
+
+                # Sort table 2
+                acc_medianTable2X.sort()
+                acc_medianTable2Y.sort()
+                acc_medianTable2Z.sort()
+
+                # The middle value is the value we are interested in
+                ACCx = acc_medianTable2X[int( ACC_MEDIANTABLESIZE/2 )]
+                ACCy = acc_medianTable2Y[int( ACC_MEDIANTABLESIZE/2 )]
+                ACCz = acc_medianTable2Z[int( ACC_MEDIANTABLESIZE/2 )]
+
+
+
+                ######################################### 
+                #### Median filter for magnetometer ####
+                #########################################
+                # cycle the table
+                for x in range (MAG_MEDIANTABLESIZE-1,0,-1 ):
+                    mag_medianTable1X[x] = mag_medianTable1X[x-1]
+                    mag_medianTable1Y[x] = mag_medianTable1Y[x-1]
+                    mag_medianTable1Z[x] = mag_medianTable1Z[x-1]
+
+                # Insert the latest values    
+                mag_medianTable1X[0] = MAGx
+                mag_medianTable1Y[0] = MAGy
+                mag_medianTable1Z[0] = MAGz    
+
+                # Copy the tables
+                mag_medianTable2X = mag_medianTable1X[:]
+                mag_medianTable2Y = mag_medianTable1Y[:]
+                mag_medianTable2Z = mag_medianTable1Z[:]
+
+                # Sort table 2
+                mag_medianTable2X.sort()
+                mag_medianTable2Y.sort()
+                mag_medianTable2Z.sort()
+
+                # The middle value is the value we are interested in
+                MAGx = mag_medianTable2X[int( MAG_MEDIANTABLESIZE/2 )]
+                MAGy = mag_medianTable2Y[int( MAG_MEDIANTABLESIZE/2 )]
+                MAGz = mag_medianTable2Z[int( MAG_MEDIANTABLESIZE/2 )]
+
+
+
+                #Convert Gyro raw to degrees per second
+                rate_gyr_x =  GYRx * G_GAIN
+                rate_gyr_y =  GYRy * G_GAIN
+                rate_gyr_z =  GYRz * G_GAIN
+
+
+                #Calculate the angles from the gyro. 
+                gyroXangle+=rate_gyr_x*LP
+                gyroYangle+=rate_gyr_y*LP
+                gyroZangle+=rate_gyr_z*LP
+
+                #Convert Accelerometer values to degrees
+
+                if not IMU_UPSIDE_DOWN:
+                    # If the IMU is up the correct way (Skull logo facing down), use these calculations
+                    AccXangle =  (math.atan2(ACCy,ACCz)*RAD_TO_DEG)
+                    AccYangle =  (math.atan2(ACCz,ACCx)+M_PI)*RAD_TO_DEG
+                else:
+                    #Us these four lines when the IMU is upside down. Skull logo is facing up
+                    AccXangle =  (math.atan2(-ACCy,-ACCz)*RAD_TO_DEG)
+                    AccYangle =  (math.atan2(-ACCz,-ACCx)+M_PI)*RAD_TO_DEG
+
+
+
+                #Change the rotation value of the accelerometer to -/+ 180 and
+                #move the Y axis '0' point to up.  This makes it easier to read.
+                if AccYangle > 90:
+                    AccYangle -= 270.0
+                else:
+                    AccYangle += 90.0
                 pass
-            elif self.use_curses :
-                import curses
 
-                if not self.init_curses : 
-                    self.init_curses = 1
-                    screen = curses.initscr()
+
+
+                #Complementary filter used to combine the accelerometer and gyro values.
+                CFangleX=AA*(CFangleX+rate_gyr_x*LP) +(1 - AA) * AccXangle
+                CFangleY=AA*(CFangleY+rate_gyr_y*LP) +(1 - AA) * AccYangle
+
+                #Kalman filter used to combine the accelerometer and gyro values.
+                kalmanY = self.kalmanFilterY(AccYangle, rate_gyr_y,LP)
+                kalmanX = self.kalmanFilterX(AccXangle, rate_gyr_x,LP)
+
+                if IMU_UPSIDE_DOWN:
+                    MAGy = -MAGy      #If IMU is upside down, this is needed to get correct heading.
                 pass
 
-                # Update the buffer, adding text at different locations
+                #Calculate heading
+                heading = 180 * math.atan2(MAGy,MAGx)/M_PI
+
+                #Only have our heading between 0 and 360
+                if heading < 0:
+                    heading += 360
+                pass
+
+
+
+                ####################################################################
+                ###################Tilt compensated heading#########################
+                ####################################################################
+                #Normalize accelerometer raw values.
+                if not IMU_UPSIDE_DOWN:        
+                    #Use these two lines when the IMU is up the right way. Skull logo is facing down
+                    accXnorm = ACCx/math.sqrt(ACCx * ACCx + ACCy * ACCy + ACCz * ACCz)
+                    accYnorm = ACCy/math.sqrt(ACCx * ACCx + ACCy * ACCy + ACCz * ACCz)
+                else:
+                    #Us these four lines when the IMU is upside down. Skull logo is facing up
+                    accXnorm = -ACCx/math.sqrt(ACCx * ACCx + ACCy * ACCy + ACCz * ACCz)
+                    accYnorm = ACCy/math.sqrt(ACCx * ACCx + ACCy * ACCy + ACCz * ACCz)
+
+                #Calculate pitch and roll
+
+                pitch = math.asin(accXnorm)
+                roll = -math.asin(accYnorm/math.cos(pitch))
+
+
+                #Calculate the new tilt compensated values
+                magXcomp = MAGx*math.cos(pitch)+MAGz*math.sin(pitch)
+            
+                #The compass and accelerometer are orientated differently on the LSM9DS0 and LSM9DS1 and the Z axis on the compass
+                #is also reversed. This needs to be taken into consideration when performing the calculations
+                if(IMU.LSM9DS0):
+                    magYcomp = MAGx*math.sin(roll)*math.sin(pitch)+MAGy*math.cos(roll)-MAGz*math.sin(roll)*math.cos(pitch)   #LSM9DS0
+                else:
+                    magYcomp = MAGx*math.sin(roll)*math.sin(pitch)+MAGy*math.cos(roll)+MAGz*math.sin(roll)*math.cos(pitch)   #LSM9DS1
+                pass
+
+
+
+
+                #Calculate tilt compensated heading
+                tiltCompensatedHeading = 180 * math.atan2(magYcomp,magXcomp)/M_PI
+
+                if tiltCompensatedHeading < 0:
+                    tiltCompensatedHeading += 360
+                pass
+
+                ############################ END ##################################
+
+                self.gyroXangle = gyroXangle
+                self.gyroYangle = gyroYangle
+                self.gyroZangle = gyroZangle
+
+                self.heading = heading
+                self.roll = roll
+                self.pitch = pitch
+                self.yaw = math.radians(heading)
+
+                self.roll_deg = math.degrees(roll)
+                self.pitch_deg = math.degrees(pitch)
+                self.yaw_deg = heading
+
+                self.kalmanX = kalmanX
+                self.kalmanY = kalmanY
+
                 
-                sx = 0
-                sy = 0
-                screen.addstr(sy, sx, "Loop Time | %5.2f|" % ( LP ) )
-                sy += 1
-                screen.addstr(sy, sx, "# ACCX Angle %5.2f ACCY Angle %5.2f #  " % (AccXangle, AccYangle)) 
-                sy += 1
-                screen.addstr(sy, sx, "# GRYX Angle %5.2f  GYRY Angle %5.2f  GYRZ Angle %5.2f # " % (gyroXangle,gyroYangle,gyroZangle)) 
-                sy += 1
-                screen.addstr(sy, sx, "# CFangleX Angle %5.2f   CFangleY Angle %5.2f #" % (CFangleX,CFangleY)) 
-                sy += 1
-                screen.addstr(sy, sx, "# HEADING %5.2f  tiltCompensatedHeading %5.2f #" % (heading,tiltCompensatedHeading)) 
-                sy += 1
-                screen.addstr(sy, sx, "# kalmanX %5.2f   kalmanY %5.2f #" % (kalmanX,kalmanY)) 
-                sy += 1
-                screen.addstr(sy, sx, "" ) 
 
-                # Changes go in to the screen buffer and only get
-                # displayed after calling `refresh()` to update
-                screen.refresh()
-                curses.napms(2000)
-            else : 
-                if dbg : 
-                    print( "Loop Time | %5.2f|" % ( LP ) )
-                pass  
-            
-                if dbg :			#Change to '0' to stop showing the angles from the accelerometer
-                    print ("# ACCX Angle %5.2f ACCY Angle %5.2f #  " % (AccXangle, AccYangle)),
 
-                if dbg :			#Change to '0' to stop  showing the angles from the gyro
-                    print ("# GRYX Angle %5.2f  GYRY Angle %5.2f  GYRZ Angle %5.2f # " % (gyroXangle,gyroYangle,gyroZangle)),
+                if not self.dbg :
+                    pass
+                elif self.use_curses :
+                    import curses
 
-                if dbg:			#Change to '0' to stop  showing the angles from the complementary filter
-                    print ("# CFangleX Angle %5.2f   CFangleY Angle %5.2f #" % (CFangleX,CFangleY)),
+                    if not self.init_curses : 
+                        self.init_curses = 1
+                        screen = curses.initscr()
+                    pass
+
+                    # Update the buffer, adding text at different locations
                     
-                if dbg:			#Change to '0' to stop  showing the heading
-                    print ("# HEADING %5.2f  tiltCompensatedHeading %5.2f #" % (heading,tiltCompensatedHeading)),
-                    
-                if dbg:			#Change to '0' to stop  showing the angles from the Kalman filter
-                    print ("# kalmanX %5.2f   kalmanY %5.2f #" % (kalmanX,kalmanY)),
+                    sx = 0
+                    sy = 0
+                    screen.addstr(sy, sx, "Loop Time | %5.2f|" % ( LP ) )
+                    sy += 1
+                    screen.addstr(sy, sx, "# ACCX Angle %5.2f ACCY Angle %5.2f #  " % (AccXangle, AccYangle)) 
+                    sy += 1
+                    screen.addstr(sy, sx, "# GRYX Angle %5.2f  GYRY Angle %5.2f  GYRZ Angle %5.2f # " % (gyroXangle,gyroYangle,gyroZangle)) 
+                    sy += 1
+                    screen.addstr(sy, sx, "# CFangleX Angle %5.2f   CFangleY Angle %5.2f #" % (CFangleX,CFangleY)) 
+                    sy += 1
+                    screen.addstr(sy, sx, "# HEADING %5.2f  tiltCompensatedHeading %5.2f #" % (heading,tiltCompensatedHeading)) 
+                    sy += 1
+                    screen.addstr(sy, sx, "# kalmanX %5.2f   kalmanY %5.2f #" % (kalmanX,kalmanY)) 
+                    sy += 1
+                    screen.addstr(sy, sx, "" ) 
 
-                #print a new line
-                print( ""   )
+                    # Changes go in to the screen buffer and only get
+                    # displayed after calling `refresh()` to update
+                    screen.refresh()
+                    curses.napms(2000)
+                else : 
+                    if dbg : 
+                        print( "Loop Time | %5.2f|" % ( LP ) )
+                    pass  
+                
+                    if dbg :			#Change to '0' to stop showing the angles from the accelerometer
+                        print ("# ACCX Angle %5.2f ACCY Angle %5.2f #  " % (AccXangle, AccYangle)),
+
+                    if dbg :			#Change to '0' to stop  showing the angles from the gyro
+                        print ("# GRYX Angle %5.2f  GYRY Angle %5.2f  GYRZ Angle %5.2f # " % (gyroXangle,gyroYangle,gyroZangle)),
+
+                    if dbg:			#Change to '0' to stop  showing the angles from the complementary filter
+                        print ("# CFangleX Angle %5.2f   CFangleY Angle %5.2f #" % (CFangleX,CFangleY)),
+                        
+                    if dbg:			#Change to '0' to stop  showing the heading
+                        print ("# HEADING %5.2f  tiltCompensatedHeading %5.2f #" % (heading,tiltCompensatedHeading)),
+                        
+                    if dbg:			#Change to '0' to stop  showing the angles from the Kalman filter
+                        print ("# kalmanX %5.2f   kalmanY %5.2f #" % (kalmanX,kalmanY)),
+
+                    #print a new line
+                    print( ""   )
+                pass
+
+                processing = 0 
+
+                #slow program down a bit, makes the output more readable
+                time.sleep(0.01)
             pass
-
-            #slow program down a bit, makes the output more readable
-            #time.sleep(0.03)
+            
         pass
 
     pass

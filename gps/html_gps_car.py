@@ -173,6 +173,16 @@ class Camera(object):
     def __del__(self):
         self.video.release()
     pass
+
+    # convert readible angle degree
+    def degree( self, angle_deg ) :
+        angle_deg = angle_deg % 360
+        if angle_deg > 180 :
+            angle_deg = 360 - angle_deg
+        pass
+
+        return angle_deg
+    pass 
     
     def get_frame(self):
         success, img = self.video.read()
@@ -212,7 +222,7 @@ class Camera(object):
 
         txt = ""
         format = "[%06d] GyroAngle X %5.2f   Y %5.2f   Z %5.2f   (deg.)"
-        txt +=  format % (imu.imu_cnt, imu.gyroXangle%360, imu.gyroYangle%360, imu.gyroZangle%360 ) 
+        txt +=  format % (imu.imu_cnt, self.degree( imu.gyroXangle ), self.degree( imu.gyroYangle ), self.degree( imu.gyroZangle ) ) 
         cv2.putText(img, txt, (x, y), font, fs, bg_color, ft + 2, cv2.LINE_AA)
         cv2.putText(img, txt, (x, y), font, fs, fg_color, ft, cv2.LINE_AA)
 
@@ -220,7 +230,7 @@ class Camera(object):
         x = 10
         y += h
         format = "[%06d] Pitch %5.2f   Roll %5.2f   Yaw %5.2f   (deg.)"
-        txt = format % ( imu.imu_cnt%360, imu.pitch_deg%360, imu.roll_deg%360, imu.yaw_deg%360 )
+        txt = format % ( imu.imu_cnt, self.degree( imu.pitch_deg ), self.degree( imu.roll_deg ), self.degree( imu.yaw_deg ) )
         cv2.putText(img, txt, (x, y), font, fs, bg_color, ft + 2, cv2.LINE_AA)
         cv2.putText(img, txt, (x, y), font, fs, fg_color, ft, cv2.LINE_AA)
 

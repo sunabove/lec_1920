@@ -126,7 +126,7 @@ page = {
     </style>
 </head>
 <body>
-<center><img src="stream.mjpg" ></center>
+<center><img src="video_feed" ></center>
 <br/>
 <center>
     <table style="text-align: center;" border="0" >
@@ -232,7 +232,7 @@ class RequestHandler(server.BaseHTTPRequestHandler):
             self.send_header('Content-Length', len(content))
             self.end_headers()
             self.wfile.write(content)
-        elif path == '/stream.mjpg':
+        elif path == '/video_feed':
             self.send_response(200)
             self.send_header('Age', 0)
             self.send_header('Cache-Control', 'no-cache, private')

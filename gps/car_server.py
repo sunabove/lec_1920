@@ -17,7 +17,7 @@ def check_pkg( pkg ) :
 	pass
 pass
 
-for pkg in [ "serial, pyserial", "pynmea2" ] :
+for pkg in [ "flask", "OpenSSL, pyopenssl", "serial, pyserial", "pynmea2" ] :
 	check_pkg( pkg )
 pass
 
@@ -93,9 +93,12 @@ from gpiozero import Robot, LED
 
 class Car( Robot ) :
 
-    def __init__(self, left, right, *, pwm=True, pin_factory=None):
-        print("A car is ready.")
-        super().__init__( left, right, pwm, pin_factory )
+    def __init__(self, *, pwm=True, pin_factory=None):
+        
+        left_motor = (22, 23) # 왼쪽 모터
+        right_motor = (9, 25)  # 오른쪽 모터
+        
+        super().__init__( left_motor, right_motor, pwm, pin_factory )
 
         self.state = "STOP"
 
@@ -103,6 +106,8 @@ class Car( Robot ) :
         self.bw_led = LED( 20 ) # 후방등
         self.lft_led = LED( 16 ) # 좌회전등
         self.rht_led = LED( 19 ) # 우회전등
+
+        print("A car is ready.")
     pass
 
     def turn_off_all( self ) :
@@ -262,7 +267,7 @@ class AdsSystem :
         self.init = 0 
         self.gps = Gps()
         self.camera = Camera()
-        self.car = Car(left=(22, 23), right=(9, 25))
+        self.car = Car()
         self.berryIMU = BerryIMU()
         self.req_no = 0
     pass

@@ -169,6 +169,7 @@ pass
 
 # camera
 import cv2
+print( "# OpenCV version %s" % cv2.__version__ )
 
 class Camera(object):
     def __init__(self):

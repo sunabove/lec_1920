@@ -350,5 +350,10 @@ pass
 # -- web by flask framewwork
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80, debug=True) 
+    use_ssl = 0
+    if use_ssl : 
+        app.run(host='0.0.0.0', port=443, ssl_context='adhoc', debug=True)
+    else :
+        app.run(host='0.0.0.0', port=80, debug=True)
+    pass
 pass

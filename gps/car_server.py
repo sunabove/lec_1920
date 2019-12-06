@@ -261,6 +261,7 @@ class Camera(object):
         return jpeg.tobytes()
     pass
 
+    # opencv 이미지에 텍스트를 그린다.
     def putTextLine(self, img, txt, x, y ) :
         font = cv2.FONT_HERSHEY_SIMPLEX # font
         fs = 0.4  # font size(scale)

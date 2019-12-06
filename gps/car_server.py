@@ -169,11 +169,13 @@ pass
 
 # camera
 import cv2
+import numpy as np
 print( "# OpenCV version %s" % cv2.__version__ )
 
 class Camera(object):
     def __init__(self):
         self.video = cv2.VideoCapture(0)
+        self.prev_img = None 
     pass
     
     def __del__(self):
@@ -190,14 +192,32 @@ class Camera(object):
         return angle_deg
     pass 
     
+    # get video frame
     def get_frame(self):
-        success, img = self.video.read()
         global ads
         car = ads.car 
         gps = ads.gps
 
+        success, img = self.video.read()
+
+        if not success :
+            if self.prev_img :
+                img = self.prev_img 
+            else :
+                h = 480
+                w= 640
+                # black blank image
+                img = np.zeros(shape=[h, w, 3], dtype=np.uint8)
+                pass
+            pass
+        elif success :
+            self.prev_img = img 
+        pass
+
         img = cv2.flip( img, 0 )
-        h, w, _ = img.shape # image height, width
+        h, w, _ = img.shape # image height, width 
+
+        #print( "h = %d, w= %d" % ( h, w ))
 
         font = cv2.FONT_HERSHEY_SIMPLEX 
         fs = 0.4  # font size(scale)
@@ -251,6 +271,7 @@ class Camera(object):
         # We are using Motion JPEG, but OpenCV defaults to capture raw images,
         # so we must encode it into JPEG in order to correctly display the video stream.
         ret, jpeg = cv2.imencode('.jpg', img)
+        
         return jpeg.tobytes()
     pass
 pass

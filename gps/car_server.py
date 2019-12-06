@@ -215,15 +215,9 @@ class Camera(object):
 
         #print( "h = %d, w= %d" % ( h, w ))
 
-        font = cv2.FONT_HERSHEY_SIMPLEX 
-        fs = 0.4  # font size(scale)
-        ft = 1    # font thickness
         x = 10   # text x position
         y = 20   # text y position
         h = 20   # line height
-
-        bg_color = (255, 255, 255) # text background color
-        fg_color = (255,   0,   0) # text foreground color
 
         msg = gps.msg
                 
@@ -234,8 +228,7 @@ class Camera(object):
         pass
 
         txt += "   " + car.state
-        cv2.putText(img, txt, (x, y), font, fs, bg_color, ft + 2, cv2.LINE_AA)
-        cv2.putText(img, txt, (x, y), font, fs, fg_color, ft    , cv2.LINE_AA)
+        self.putTextLine( img, txt , x, y ) 
 
         # gyro angle text drawing
         imu = ads.berryIMU
@@ -247,30 +240,40 @@ class Camera(object):
         txt = ""
         format = "[%06d] GyroAngle X %5.2f   Y %5.2f   Z %5.2f   (deg)"
         txt +=  format % (imuData.imu_cnt, self.degree( imuData.gyroXangle ), self.degree( imuData.gyroYangle ), self.degree( imuData.gyroZangle ) ) 
-        cv2.putText(img, txt, (x, y), font, fs, bg_color, ft + 2, cv2.LINE_AA)
-        cv2.putText(img, txt, (x, y), font, fs, fg_color, ft, cv2.LINE_AA)
+        self.putTextLine( img, txt , x, y ) 
 
         # pitch, roll, yaw drawing
         x = 10
         y += h
         format = "[%06d] Pitch %5.2f   Roll %5.2f   Yaw %5.2f   (deg)"
         txt = format % ( imuData.imu_cnt, self.degree( imuData.pitch_deg ), self.degree( imuData.roll_deg ), self.degree( imuData.yaw_deg ) )
-        cv2.putText(img, txt, (x, y), font, fs, bg_color, ft + 2, cv2.LINE_AA)
-        cv2.putText(img, txt, (x, y), font, fs, fg_color, ft, cv2.LINE_AA)
+        self.putTextLine( img, txt , x, y ) 
 
         # kalman x, y drawing
         x = 10
         y += h
         format = "[%06d] Kalman X %5.2f   Y %5.2f "
         txt = format % ( imuData.imu_cnt, imuData.kalmanX, imuData.kalmanY )
-        cv2.putText(img, txt, (x, y), font, fs, bg_color, ft + 2, cv2.LINE_AA)
-        cv2.putText(img, txt, (x, y), font, fs, fg_color, ft, cv2.LINE_AA)
+        self.putTextLine( img, txt , x, y ) 
 
         # We are using Motion JPEG, but OpenCV defaults to capture raw images,
         # so we must encode it into JPEG in order to correctly display the video stream.
         ret, jpeg = cv2.imencode('.jpg', img)
         
         return jpeg.tobytes()
+    pass
+
+    def putTextLine(self, img, txt, x, y ) :
+        font = cv2.FONT_HERSHEY_SIMPLEX 
+        fs = 0.4  # font size(scale)
+        ft = 1    # font thickness
+        
+
+        bg_color = (255, 255, 255) # text background color
+        fg_color = (255,   0,   0) # text foreground color
+
+        cv2.putText(img, txt, (x, y), font, fs, bg_color, ft + 2, cv2.LINE_AA)
+        cv2.putText(img, txt, (x, y), font, fs, fg_color, ft    , cv2.LINE_AA) 
     pass
 pass
 

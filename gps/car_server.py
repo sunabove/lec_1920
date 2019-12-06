@@ -176,6 +176,9 @@ class Camera(object):
     def __init__(self):
         self.video = cv2.VideoCapture(0)
         self.video.set(cv2.CAP_PROP_FPS, 24)
+        # self.video.set(cv2.CAP_PROP_FOURCC,cv2.VideoWriter_fourcc(*'H264'))
+        # self.video.set(cv2.CAP_PROP_FOURCC,cv2.VideoWriter_fourcc(*'MJPG'))
+        self.video.set(cv2.CAP_PROP_FOURCC,cv2.VideoWriter_fourcc(*'X264'))
     pass
     
     def __del__(self):

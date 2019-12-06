@@ -175,7 +175,7 @@ print( "# OpenCV version %s" % cv2.__version__ )
 class Camera(object):
     def __init__(self):
         self.video = cv2.VideoCapture(0)
-        self.prev_img = None 
+        self.video.set(cv2.CAP_PROP_FPS, 15)
     pass
     
     def __del__(self):
@@ -201,17 +201,11 @@ class Camera(object):
         success, img = self.video.read()
 
         if not success :
-            if self.prev_img :
-                img = self.prev_img 
-            else :
-                h = 480
-                w= 640
-                # black blank image
-                img = np.zeros(shape=[h, w, 3], dtype=np.uint8)
-                pass
-            pass
-        elif success :
-            self.prev_img = img 
+            h = 480
+            w= 640
+            # black blank image
+            img = np.zeros(shape=[h, w, 3], dtype=np.uint8)
+            pass 
         pass
 
         img = cv2.flip( img, 0 )

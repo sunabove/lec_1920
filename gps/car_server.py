@@ -242,9 +242,11 @@ class Camera(object):
         x = 10
         y += h
 
+        imuData = imu.imuData
+        
         txt = ""
         format = "[%06d] GyroAngle X %5.2f   Y %5.2f   Z %5.2f   (deg)"
-        txt +=  format % (imu.imu_cnt, self.degree( imu.gyroXangle ), self.degree( imu.gyroYangle ), self.degree( imu.gyroZangle ) ) 
+        txt +=  format % (imuData.imu_cnt, self.degree( imuData.gyroXangle ), self.degree( imuData.gyroYangle ), self.degree( imuData.gyroZangle ) ) 
         cv2.putText(img, txt, (x, y), font, fs, bg_color, ft + 2, cv2.LINE_AA)
         cv2.putText(img, txt, (x, y), font, fs, fg_color, ft, cv2.LINE_AA)
 
@@ -252,7 +254,7 @@ class Camera(object):
         x = 10
         y += h
         format = "[%06d] Pitch %5.2f   Roll %5.2f   Yaw %5.2f   (deg)"
-        txt = format % ( imu.imu_cnt, self.degree( imu.pitch_deg ), self.degree( imu.roll_deg ), self.degree( imu.yaw_deg ) )
+        txt = format % ( imuData.imu_cnt, self.degree( imuData.pitch_deg ), self.degree( imuData.roll_deg ), self.degree( imuData.yaw_deg ) )
         cv2.putText(img, txt, (x, y), font, fs, bg_color, ft + 2, cv2.LINE_AA)
         cv2.putText(img, txt, (x, y), font, fs, fg_color, ft, cv2.LINE_AA)
 
@@ -260,7 +262,7 @@ class Camera(object):
         x = 10
         y += h
         format = "[%06d] Kalman X %5.2f   Y %5.2f "
-        txt = format % ( imu.imu_cnt, imu.kalmanX, imu.kalmanY )
+        txt = format % ( imuData.imu_cnt, imuData.kalmanX, imuData.kalmanY )
         cv2.putText(img, txt, (x, y), font, fs, bg_color, ft + 2, cv2.LINE_AA)
         cv2.putText(img, txt, (x, y), font, fs, fg_color, ft, cv2.LINE_AA)
 
@@ -278,7 +280,7 @@ pass
 from flask import Flask, render_template, Response, jsonify
 from flask import request 
 
-from BerryIMU import BerryIMU
+from BerryIMU import *
 
 class AdsSystem :
     def __init__( self ) :

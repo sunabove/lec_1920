@@ -64,14 +64,9 @@ YP_11 = 0.0
 KFangleX = 0.0
 KFangleY = 0.0
 
-
-
-class BerryIMU : 
+class ImuData :
     def __init__( self ) :
-        self.dbg = 0
-        self.use_curses = 0
-        self.init_curses = 0 
-        self.calibrated = 0 
+        self.dbg = 0 
 
         self.imu_cnt = 0 
 
@@ -90,6 +85,17 @@ class BerryIMU :
 
         self.kalmanX = 0.0
         self.kalmanY = 0.0
+        pass
+    pass
+pass
+
+class BerryIMU : 
+    def __init__( self ) :
+        self.dbg = 0
+        self.imu_cnt = 0 
+        self.imuData = ImuData()
+        self.imuData.dbg = self.dbg
+        self.calibrated = 0 
         pass
     pass
 
@@ -490,24 +496,27 @@ class BerryIMU :
 
                 ############################ END ##################################
 
-                self.gyroXangle = gyroXangle
-                self.gyroYangle = gyroYangle
-                self.gyroZangle = gyroZangle
+                imuData = ImuData() 
 
-                self.heading = heading
-                self.roll = roll
-                self.pitch = pitch
-                self.yaw = math.radians(heading)
+                imuData.imu_cnt = self.imu_cnt 
 
-                self.roll_deg = math.degrees(roll)
-                self.pitch_deg = math.degrees(pitch)
-                self.yaw_deg = heading
+                imuData.gyroXangle = gyroXangle
+                imuData.gyroYangle = gyroYangle
+                imuData.gyroZangle = gyroZangle
 
-                self.kalmanX = kalmanX
-                self.kalmanY = kalmanY
+                imuData.heading = heading
+                imuData.roll = roll
+                imuData.pitch = pitch
+                imuData.yaw = math.radians(heading)
 
-                
+                imuData.roll_deg = math.degrees(roll)
+                imuData.pitch_deg = math.degrees(pitch)
+                imuData.yaw_deg = heading
 
+                imuData.kalmanX = kalmanX
+                imuData.kalmanY = kalmanY
+
+                self.imuData = imuData  
 
                 if not self.dbg :
                     pass

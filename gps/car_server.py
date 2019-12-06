@@ -175,8 +175,6 @@ class Camera(object):
     def __init__(self):
         self.video = cv2.VideoCapture(0)
         self.video.set(cv2.CAP_PROP_FPS, 24)
-        # self.video.set(cv2.CAP_PROP_FOURCC,cv2.VideoWriter_fourcc(*'H264'))
-        # self.video.set(cv2.CAP_PROP_FOURCC,cv2.VideoWriter_fourcc(*'MJPG'))
         self.video.set(cv2.CAP_PROP_FOURCC,cv2.VideoWriter_fourcc(*'X264'))
     pass
     
@@ -264,7 +262,7 @@ class Camera(object):
     pass
 
     def putTextLine(self, img, txt, x, y ) :
-        font = cv2.FONT_HERSHEY_SIMPLEX 
+        font = cv2.FONT_HERSHEY_SIMPLEX # font
         fs = 0.4  # font size(scale)
         ft = 1    # font thickness
         

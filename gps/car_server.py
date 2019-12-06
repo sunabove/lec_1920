@@ -305,7 +305,6 @@ class AdsSystem :
 pass
 
 ads = None 
-app = Flask(__name__)
 
 def init_system() :
     global ads
@@ -314,6 +313,8 @@ def init_system() :
         ads.initSystem()
     pass 
 pass
+
+app = Flask(__name__)
 
 def gen(camera):
     global ads 

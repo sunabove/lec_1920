@@ -46,15 +46,14 @@ class Gps :
             self.gps_parse_cnt += 1
             gps_parse_cnt = self.gps_parse_cnt
             msg = pynmea2.parse(str)
+            msg.gps_parse_cnt = gps_parse_cnt 
 
-            self.msg = msg            
-            self.lat = msg.lat
-            self.lon = msg.lon
-            self.alt = msg.altitude 
+            self.msg = msg 
 
             if self.dbg : 
                 print( "[%04d] %s" % ( gps_parse_cnt, str ) , end ="" )
-                print( "[%04d] Timestamp: %s -- Lat: %s %s -- Lon: %s %s -- Altitude: %s %s -- Satellites: %s" % ( gps_parse_cnt, msg.timestamp,msg.lat,msg.lat_dir,msg.lon,msg.lon_dir,msg.altitude,msg.altitude_units,msg.num_sats) )
+                format = "[%04d] Timestamp: %s -- Lat: %s %s -- Lon: %s %s -- Altitude: %s %s -- Satellites: %s" 
+                print( format % ( gps_parse_cnt, msg.timestamp, msg.lat,msg.lat_dir, msg.lon,msg.lon_dir,msg.altitude,msg.altitude_units,msg.num_sats) )
             pass
         pass
     pass 
@@ -231,7 +230,7 @@ class Camera(object):
         if not msg :
             txt = "No GPS"
         else :  
-            txt = "[%06d] GPS %s %s  %s %s  %s%s H" % ( gps.gps_cnt, msg.lat, msg.lat_dir, msg.lon, msg.lon_dir, msg.altitude, msg.altitude_units )
+            txt = "[%06d] GPS %s %s  %s %s  %s%s H" % ( msg.gps_parse_cnt, msg.lat, msg.lat_dir, msg.lon, msg.lon_dir, msg.altitude, msg.altitude_units )
         pass
 
         txt += "   " + car.state

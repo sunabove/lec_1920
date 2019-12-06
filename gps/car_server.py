@@ -347,6 +347,8 @@ def car_json():
     ads.req_no += 1
     motion = request.args.get('motion')
 
+    print( "motion = %s" % motion )
+
     if "forward" == motion :
         car.forward() 
     elif "backward" == motion :

@@ -175,7 +175,7 @@ print( "# OpenCV version %s" % cv2.__version__ )
 class Camera(object):
     def __init__(self):
         self.video = cv2.VideoCapture(0)
-        self.video.set(cv2.CAP_PROP_FPS, 15)
+        self.video.set(cv2.CAP_PROP_FPS, 24)
     pass
     
     def __del__(self):

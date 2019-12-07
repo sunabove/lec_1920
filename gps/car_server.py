@@ -236,21 +236,21 @@ class Camera(object):
         imuData = imu.imuData
         
         txt = ""
-        format = "[%06d] GyroAngle X %5.2f   Y %5.2f   Z %5.2f   (deg)"
+        format = "[%06d] GyroAngle X %+06.2f   Y %+06.2f   Z %+06.2f   (deg)"
         txt +=  format % (imuData.imu_cnt, self.degree( imuData.gyroXangle ), self.degree( imuData.gyroYangle ), self.degree( imuData.gyroZangle ) ) 
         self.putTextLine( img, txt , x, y ) 
 
         # pitch, roll, yaw drawing
         x = 10
         y += h
-        format = "[%06d] Pitch %5.2f   Roll %5.2f   Yaw %5.2f   (deg)"
+        format = "[%06d] Pitch % 5.2f   Roll % 5.2f   Yaw % 5.2f   (deg)"
         txt = format % ( imuData.imu_cnt, self.degree( imuData.pitch_deg ), self.degree( imuData.roll_deg ), self.degree( imuData.yaw_deg ) )
         self.putTextLine( img, txt , x, y ) 
 
         # kalman x, y drawing
         x = 10
         y += h
-        format = "[%06d] Kalman X %5.2f   Y %5.2f "
+        format = "[%06d] Kalman X % 5.2f   Y % 5.2f "
         txt = format % ( imuData.imu_cnt, imuData.kalmanX, imuData.kalmanY )
         self.putTextLine( img, txt , x, y ) 
 

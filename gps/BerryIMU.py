@@ -92,6 +92,8 @@ pass
 class BerryIMU : 
     def __init__( self ) :
         self.dbg = 0
+        self.init_curses = 0 
+        self.use_curses = 0 
         self.imu_cnt = 0 
         self.imuData = ImuData()
         self.imuData.dbg = self.dbg
@@ -587,7 +589,7 @@ pass
 
 if __name__ == '__main__':
     berryIMU = BerryIMU()
-    berryIMU.use_curses = 1
+    berryIMU.use_curses = 0
     berryIMU.dbg = 1
     
     try : 

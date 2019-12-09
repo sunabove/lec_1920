@@ -398,23 +398,27 @@ class Camera(object):
         if not msg :
             txt = "No GPS"
         else :  
-            txt = "[%06d] GPS %s %s  %s %s  %s%s H" % ( msg.gps_parse_cnt, msg.lat, msg.lat_dir, msg.lon, msg.lon_dir, msg.altitude, msg.altitude_units )
+            format = "[%06d] GPS %s %s  %s %s  %s%s H"
+            txt = format % ( msg.gps_parse_cnt, msg.lat, msg.lat_dir, msg.lon, msg.lon_dir, msg.altitude, msg.altitude_units )
         pass
 
         txt += "   " + car.state
         self.putTextLine( img, txt , x, y ) 
 
-        # gyro angle text drawing
         imu = ads.berryIMU
-        x = 10
-        y += h
-
-        imuData = imu.imuData
         
-        txt = ""
-        format = "[%06d] GyroAngle Y(Pitch) %+06.2f   X(Roll) %+06.2f   Z(Yaw) %+06.2f   (deg)"
-        txt +=  format % (imuData.imu_cnt, self.pretty_angle( imuData.gyroYangle ), self.pretty_angle( imuData.gyroXangle ), self.pretty_angle( imuData.gyroZangle ) ) 
-        self.putTextLine( img, txt , x, y ) 
+        imuData = imu.imuData
+        txt = ""        
+        
+
+        # gyro angle text drawing
+        if 0 : 
+            x = 10
+            y += h
+            format = "[%06d] GyroAngle Y(Pitch) %+06.2f   X(Roll) %+06.2f   Z(Yaw) %+06.2f   (deg)"
+            txt +=  format % (imuData.imu_cnt, self.pretty_angle( imuData.gyroYangle ), self.pretty_angle( imuData.gyroXangle ), self.pretty_angle( imuData.gyroZangle ) ) 
+            self.putTextLine( img, txt , x, y ) 
+        pass
 
         # pitch, roll, yaw drawing
         x = 10

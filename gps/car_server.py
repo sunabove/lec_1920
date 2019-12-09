@@ -6,7 +6,7 @@ def check_pkg( pkg ) :
 		mode_name = pkg.split(",")[0].strip() 
 		importlib.import_module( mode_name )
 	except ModuleNotFoundError :
-		print( '%s is not installed, installing it now!' % mode_name )
+		print( '%s is not installed, installing it now ... ' % mode_name )
 		import sys 
 		try:
 			from pip import main as pipmain
@@ -17,7 +17,7 @@ def check_pkg( pkg ) :
 	pass
 pass
 
-for pkg in [ "flask", "OpenSSL, pyopenssl", "serial, pyserial", "pynmea2" ] :
+for pkg in [ "flask", "flask_socketio", "OpenSSL, pyopenssl", "serial, pyserial", "pynmea2" ] :
 	check_pkg( pkg )
 pass
 

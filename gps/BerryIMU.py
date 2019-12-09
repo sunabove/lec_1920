@@ -64,6 +64,16 @@ YP_11 = 0.0
 KFangleX = 0.0
 KFangleY = 0.0
 
+# convert readible angle degree
+def pretty_angle( angle_deg ) :
+    angle_deg = angle_deg % 360
+    if angle_deg > 180 :
+        angle_deg = angle_deg - 360
+    pass
+
+    return angle_deg
+pass 
+
 class ImuData :
     def __init__( self ) :
         self.dbg = 0 
@@ -535,16 +545,27 @@ class BerryIMU :
                     sx = 0
                     sy = 0
                     screen.addstr(sy, sx, "Loop Time | %5.2f|" % ( LP ) )
+                    
                     sy += 1
-                    screen.addstr(sy, sx, "# ACCX Angle %5.2f ACCY Angle %5.2f #  " % (AccXangle, AccYangle)) 
+                    format = "# ACCX Angle %5.2f ACCY Angle %5.2f #  "
+                    screen.addstr(sy, sx, format % (AccXangle, AccYangle)) 
+
                     sy += 1
-                    screen.addstr(sy, sx, "# GRYX Angle %5.2f  GYRY Angle %5.2f  GYRZ Angle %5.2f # " % (gyroXangle,gyroYangle,gyroZangle)) 
+                    format = "# GRYX Angle %5.2f  GYRY Angle %5.2f  GYRZ Angle %5.2f # "
+                    screen.addstr(sy, sx, format % (pretty_angle( gyroXangle ), pretty_angle( gyroYangle ), pretty_angle( gyroZangle ) )) 
+                    
                     sy += 1
-                    screen.addstr(sy, sx, "# CFangleX Angle %5.2f   CFangleY Angle %5.2f #" % (CFangleX,CFangleY)) 
+                    format = "# CFangleX Angle %5.2f   CFangleY Angle %5.2f #"
+                    screen.addstr(sy, sx, format % ( pretty_angle( CFangleX ), pretty_angle( CFangleY) )) 
+
                     sy += 1
-                    screen.addstr(sy, sx, "# HEADING %5.2f  tiltCompensatedHeading %5.2f #" % (heading,tiltCompensatedHeading)) 
+                    format = "# HEADING %5.2f  tiltCompensatedHeading %5.2f #"
+                    screen.addstr(sy, sx, format % ( pretty_angle( heading ) , pretty_angle( tiltCompensatedHeading )) ) 
+
                     sy += 1
-                    screen.addstr(sy, sx, "# kalmanX %5.2f   kalmanY %5.2f #" % (kalmanX,kalmanY)) 
+                    format = "# kalmanX %5.2f   kalmanY %5.2f #"
+                    screen.addstr(sy, sx, format % (kalmanX,kalmanY)) 
+
                     sy += 1
                     screen.addstr(sy, sx, "" ) 
 
@@ -557,20 +578,25 @@ class BerryIMU :
                         print( "Loop Time | %5.2f|" % ( LP ) )
                     pass  
                 
-                    if dbg :			#Change to '0' to stop showing the angles from the accelerometer
-                        print ("# ACCX Angle %5.2f ACCY Angle %5.2f #  " % (AccXangle, AccYangle)),
+                    if dbg : 
+                        format = "# ACCX Angle %5.2f ACCY Angle %5.2f"
+                        print ( format % ( pretty_angle( AccXangle ), pretty_angle( AccYangle ) )),
 
-                    if dbg :			#Change to '0' to stop  showing the angles from the gyro
-                        print ("# GRYX Angle %5.2f  GYRY Angle %5.2f  GYRZ Angle %5.2f # " % (gyroXangle,gyroYangle,gyroZangle)),
+                    if dbg : 
+                        format = "# GRYX Angle %5.2f  GYRY Angle %5.2f  GYRZ Angle %5.2f"
+                        print ( format % ( pretty_angle( gyroXangle ), pretty_angle( gyroYangle ), pretty_angle( gyroZangle ) )),
 
-                    if dbg:			#Change to '0' to stop  showing the angles from the complementary filter
-                        print ("# CFangleX Angle %5.2f   CFangleY Angle %5.2f #" % (CFangleX,CFangleY)),
+                    if dbg: 
+                        format = "# CFangleX Angle %5.2f   CFangleY Angle %5.2f"
+                        print ( format % ( pretty_angle( CFangleX ), pretty_angle( CFangleY ) )),
                         
-                    if dbg:			#Change to '0' to stop  showing the heading
-                        print ("# HEADING %5.2f  tiltCompensatedHeading %5.2f #" % (heading,tiltCompensatedHeading)),
+                    if dbg: 
+                        format = "# HEADING %5.2f  tiltCompensatedHeading %5.2f"
+                        print ( format % ( pretty_angle( heading ), pretty_angle( tiltCompensatedHeading ) )),
                         
-                    if dbg:			#Change to '0' to stop  showing the angles from the Kalman filter
-                        print ("# kalmanX %5.2f   kalmanY %5.2f #" % (kalmanX,kalmanY)),
+                    if dbg: 
+                        format = "# kalmanX %5.2f   kalmanY %5.2f"
+                        print ( format % (kalmanX,kalmanY)),
 
                     #print a new line
                     print( ""   )

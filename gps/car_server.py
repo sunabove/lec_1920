@@ -359,7 +359,7 @@ class Camera(object):
     pass
 
     # convert readible angle degree
-    def degree( self, angle_deg ) :
+    def pretty_angle( self, angle_deg ) :
         angle_deg = angle_deg % 360
         if angle_deg > 180 :
             angle_deg = angle_deg - 360
@@ -413,14 +413,14 @@ class Camera(object):
         
         txt = ""
         format = "[%06d] GyroAngle X %+06.2f   Y %+06.2f   Z %+06.2f   (deg)"
-        txt +=  format % (imuData.imu_cnt, self.degree( imuData.gyroXangle ), self.degree( imuData.gyroYangle ), self.degree( imuData.gyroZangle ) ) 
+        txt +=  format % (imuData.imu_cnt, self.pretty_angle( imuData.gyroXangle ), self.pretty_angle( imuData.gyroYangle ), self.pretty_angle( imuData.gyroZangle ) ) 
         self.putTextLine( img, txt , x, y ) 
 
         # pitch, roll, yaw drawing
         x = 10
         y += h
         format = "[%06d] Pitch % 5.2f   Roll % 5.2f   Yaw % 5.2f   (deg)"
-        txt = format % ( imuData.imu_cnt, self.degree( imuData.pitch_deg ), self.degree( imuData.roll_deg ), self.degree( imuData.yaw_deg ) )
+        txt = format % ( imuData.imu_cnt, self.pretty_angle( imuData.pitch_deg ), self.pretty_angle( imuData.roll_deg ), self.pretty_angle( imuData.yaw_deg ) )
         self.putTextLine( img, txt , x, y ) 
 
         # kalman x, y drawing

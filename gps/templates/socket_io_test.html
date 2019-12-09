@@ -29,7 +29,7 @@
             // The callback function is invoked whenever the server emits data
             // to the client. The data is then displayed in the "Received"
             // section of the page.
-            socket.on('my_response', function(msg, cb) {
+            socket.on('my response', function(msg, cb) {
                 $('#log').append('<br>' + $('<div/>').text('Received #' + msg.count + ': ' + msg.data).html());
                 if (cb)
                     cb();
@@ -58,17 +58,17 @@
                 for (var i = 0; i < ping_pong_times.length; i++)
                     sum += ping_pong_times[i];
                 $('#ping-pong').text(Math.round(10 * sum / ping_pong_times.length) / 10);
-            });
+            }); 
 
             // Handlers for the different forms in the page.
             // These accept data from the user and send it to the server in a
             // variety of ways
             $('form#emit').submit(function(event) {
-                socket.emit('my_event', {data: $('#emit_data').val()});
+                socket.emit('my event', {data: $('#emit_data').val()});
                 return false;
             });
             $('form#broadcast').submit(function(event) {
-                socket.emit('my_broadcast_event', {data: $('#broadcast_data').val()});
+                socket.emit('my broadcast event', {data: $('#broadcast_data').val()});
                 return false;
             });
             $('form#join').submit(function(event) {
@@ -80,15 +80,15 @@
                 return false;
             });
             $('form#send_room').submit(function(event) {
-                socket.emit('my_room_event', {room: $('#room_name').val(), data: $('#room_data').val()});
+                socket.emit('my room event', {room: $('#room_name').val(), data: $('#room_data').val()});
                 return false;
             });
             $('form#close').submit(function(event) {
-                socket.emit('close_room', {room: $('#close_room').val()});
+                socket.emit('close room', {room: $('#close_room').val()});
                 return false;
             });
             $('form#disconnect').submit(function(event) {
-                socket.emit('disconnect_request');
+                socket.emit('disconnect request');
                 return false;
             });
         });

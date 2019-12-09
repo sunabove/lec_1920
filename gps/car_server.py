@@ -592,10 +592,11 @@ def test_disconnect():
 if __name__ == '__main__':
     use_ssl = 0
     if use_ssl : 
-        socketio.run(app)
         app.run(host='0.0.0.0', port=443, ssl_context='adhoc', debug=True)
     else :
-        socketio.run(app)
         app.run(host='0.0.0.0', port=80, debug=True) 
     pass
+
+    socketio.run(app)
+        
 pass

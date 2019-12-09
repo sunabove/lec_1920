@@ -91,6 +91,15 @@ pass
 
 # car
 
+class State :
+    FORWARD = "FORWARD"
+    BACKWARD = "BACKEARD"
+    STOP = "STOP"
+    LEFT = "LEFT"
+    RIGHT = "RIGHT" 
+    REVERSE = "REVERSE"
+pass
+    
 from gpiozero import Robot, LED
 
 class Car( Robot ) :
@@ -104,7 +113,7 @@ class Car( Robot ) :
         
         super().__init__( left_motor, right_motor)
 
-        self.state = "STOP"
+        self.state = State.STOP
 
         self.fw_led = LED( 21 ) # 주행등
         self.bw_led = LED( 20 ) # 후방등
@@ -115,23 +124,24 @@ class Car( Robot ) :
     pass
 
     # LED 깜빡이기
-    def blink_led_thread( self, led ) :
-        threading.Thread(target=self.blink_led_impl, args =( led, ) ).start()
+    def blink_led( self, led, duration ) :
+        threading.Thread(target=self.blink_led_thread, args =( led, duration, ) ).start()
     pass
 
     # LED 깜빡이기 구현
-    def blink_led_impl( self, led ) :
-        req_no = self.req_no
-        duration = 0.2
+    def blink_led_thread( self, led, duration=( 0.3, 0.3 ) ) :
+        req_no = self.req_no 
         led_on = True 
         while( req_no is self.req_no ) :
             if led_on : 
                 led.on()
+
+                sleep( duration[0] ) 
             else :
                 led.off()
-            pass
-            sleep( duration ) 
 
+                sleep( duration[1] ) 
+            pass 
             led_on = not led_on 
         pass
     pass
@@ -139,6 +149,24 @@ class Car( Robot ) :
     # 공통 프로세스
     def proc_common(self):
         self.req_no += 1
+
+        state = self.state
+
+        if state is State.FORWARD :
+            self.blink_led( self.fw_led, (3, 0.3) )
+        elif state is State.STOP :
+            pass
+        elif state is State.BACKWARD :
+            self.blink_led( self.bw_led )
+        elif state is State.LEFT :
+            self.blink_led( self.lft_led )
+        elif state is State.RIGHT :
+            self.blink_led( self.rht_led )
+        pass
+    pass
+
+    def move_common(self) :
+        pass
     pass
 
     # 모든 LED 등을 끈다.
@@ -151,74 +179,69 @@ class Car( Robot ) :
 
     # 전진
     def forward(self, speed=1):
-        self.proc_common()
+        self.state = State.FORWARD
 
         super().forward(speed)
         self.turn_off_all()
         self.fw_led.on() 
 
-        self.state = "FORWARD" 
+        self.proc_common()
     pass
 
     # 후진
     def backward(self, speed=1):
-        self.proc_common()
+        self.state = State.BACKWARD
 
         super().backward(speed)
         self.turn_off_all()
         self.bw_led.on()
 
-        self.state = "BACKWARD" 
-
-        self.blink_led_thread( self.bw_led )
+        self.proc_common() 
     pass
 
     # 좌회전
     def left(self, speed=1):
-        self.proc_common()
-
+        self.state = State.LEFT
+        
         super().left( speed )
         self.turn_off_all()
         self.lft_led.on()
 
-        self.state = "LEFT" 
-
-        self.blink_led_thread( self.lft_led )
+        self.proc_common() 
     pass
 
     # 우회전
     def right(self, speed=1):
-        self.proc_common()
+        self.state = State.RIGHT
 
         super().right( speed )
         self.turn_off_all()
         self.rht_led.on()
 
-        self.state = "RIGHT" 
-
-        self.blink_led_thread( self.rht_led )
+        self.proc_common() 
     pass
 
     # 뒤로 
     def reverse(self):
+        self.state = State.REVERSE
+        
         self.proc_common()
 
         super().reverse()
         self.turn_off_all()
         self.bw_led.off()
 
-        self.state = "REVERSE" 
-
-        self.blink_led_thread( self.bw_led )
+        self.proc_common() 
     pass
 
     # 멈춤.
     def stop(self):
-        self.proc_common()
+        self.state = State.STOP
 
         super().stop()
-        self.turn_off_all()
-        self.state = "STOP" 
+        self.turn_off_all() 
+
+        self.proc_common() 
     pass 
 
 pass

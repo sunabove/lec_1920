@@ -566,6 +566,11 @@ pass
 
 # socket io
 
+@app.route('/socket_io_test.html')
+def socket_io_test(): 
+    return render_template('socket_io_test.html')
+pass
+
 @socketio.on('my event', namespace='/test')
 def test_message_01(message):
     emit('my response', {'data': message['data']})

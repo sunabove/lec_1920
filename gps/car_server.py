@@ -50,10 +50,16 @@ class Gps :
 
     def parseGPS(self, str):
         if 'GGA' in str :
-            self.gps_parse_cnt += 1
-            gps_parse_cnt = self.gps_parse_cnt
-            msg = pynmea2.parse(str)
+            msg = pynmea2.parse(str) 
+
+            if msg.lat :
+                self.gps_parse_cnt += 1
+            pass
+
+            gps_parse_cnt = self.gps_parse_cnt 
+            
             msg.gps_parse_cnt = gps_parse_cnt 
+            
 
             self.msg = msg 
 
@@ -238,7 +244,8 @@ class Car( Robot ) :
             elif elapsed >= duration :
                 speed = 0.0
             else :
-                speed = math.cos( pi*elapsed/duration/2.0 )
+                speed = math.sin( pi*(elapsed + sleep_sec)/duration )
+                #speed = math.cos( pi*elapsed/duration/2.0 )
             pass 
 
             print( "[%03d] elapsed = %2.4f  speed = %2.4f" % ( idx, elapsed, speed ) )  
@@ -252,7 +259,8 @@ class Car( Robot ) :
 
                 sleep( sleep_sec ) 
             else :
-                req_no = -1 
+                req_no = -1
+                
                 self.stop()
             pass
 

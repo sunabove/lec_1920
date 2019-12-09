@@ -530,7 +530,7 @@ def car_json():
     global ads
     car = ads.car
     ads.req_no += 1
-    motion = request.args.get('motion')
+    motion = request.args.get('motion').lower()
 
     print( "motion = %s" % motion )
 

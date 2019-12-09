@@ -124,14 +124,21 @@ class Car( Robot ) :
     pass
 
     # LED 깜빡이기
-    def blink_led( self, led, duration ) :
-        threading.Thread(target=self.blink_led_thread, args =( led, duration, ) ).start()
+    def blink_led( self, led ) :
+        threading.Thread(target=self.blink_led_thread, args =( led, ) ).start()
     pass
 
     # LED 깜빡이기 구현
-    def blink_led_thread( self, led, duration=( 0.3, 0.3 ) ) :
+    def blink_led_thread( self, led ) :
         req_no = self.req_no 
+        state = self.state
         led_on = True 
+        
+        duration=( 0.3, 0.3 )
+        if state is State.FORWARD :
+            duration = (3, 0.3)
+        pass
+
         while( req_no is self.req_no ) :
             if led_on : 
                 led.on()
@@ -153,7 +160,7 @@ class Car( Robot ) :
         state = self.state
 
         if state is State.FORWARD :
-            self.blink_led( self.fw_led, (3, 0.3) )
+            self.blink_led( self.fw_led )
         elif state is State.STOP :
             pass
         elif state is State.BACKWARD :

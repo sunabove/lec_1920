@@ -111,6 +111,9 @@ class Car( Robot ) :
     # 생성자.
     def __init__(self):
         self.req_no = 0 
+
+        self.forward_duration = 1.0
+        self.rotate_duration  = 0.2    
         
         left_motor = (22, 23) # 왼쪽 모터
         right_motor = (9, 25)  # 오른쪽 모터
@@ -198,28 +201,27 @@ class Car( Robot ) :
 
     # 전진 스레드
     def move_forward_thread(self, req_no) : 
-        self.move_linear_thread( req_no, super().forward)
+        self.move_linear_thread( req_no, super().forward, self.forward_duration )
     pass
 
     # 전진 스레드
     def move_backward_thread(self, req_no) : 
-        self.move_linear_thread( req_no, super().backward)
+        self.move_linear_thread( req_no, super().backward, self.forward_duration )
     pass
 
     # 좌회전 스레드
     def move_left_thread(self, req_no) : 
-        self.move_linear_thread( req_no, super().left)
+        self.move_linear_thread( req_no, super().left, self.rotate_duration )
     pass
 
     # 우회전 스레드
     def move_right_thread(self, req_no) : 
-        self.move_linear_thread( req_no, super().right)
+        self.move_linear_thread( req_no, super().right, self.rotate_duration )
     pass
 
     # 전후진 공통 스레드
-    def move_linear_thread(self, req_no, move_fun) : 
-        sleep_sec = 0.095
-        duration = 1.0
+    def move_linear_thread(self, req_no, move_fun, duration = 1.0) : 
+        sleep_sec = 0.095 
 
         speed = 1.0
 

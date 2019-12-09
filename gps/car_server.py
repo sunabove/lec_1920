@@ -412,8 +412,8 @@ class Camera(object):
         imuData = imu.imuData
         
         txt = ""
-        format = "[%06d] GyroAngle X %+06.2f   Y %+06.2f   Z %+06.2f   (deg)"
-        txt +=  format % (imuData.imu_cnt, self.pretty_angle( imuData.gyroXangle ), self.pretty_angle( imuData.gyroYangle ), self.pretty_angle( imuData.gyroZangle ) ) 
+        format = "[%06d] GyroAngle Y(Pitch) %+06.2f   X(Roll) %+06.2f   Z(Yaw) %+06.2f   (deg)"
+        txt +=  format % (imuData.imu_cnt, self.pretty_angle( imuData.gyroYangle ), self.pretty_angle( imuData.gyroXangle ), self.pretty_angle( imuData.gyroZangle ) ) 
         self.putTextLine( img, txt , x, y ) 
 
         # pitch, roll, yaw drawing

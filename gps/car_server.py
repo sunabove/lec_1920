@@ -21,6 +21,7 @@ for pkg in [ "flask", "OpenSSL, pyopenssl", "serial, pyserial", "pynmea2" ] :
 	check_pkg( pkg )
 pass
 
+# default import packages
 import time
 from time import sleep
 import threading
@@ -29,6 +30,7 @@ import math
 import logging
 logging.basicConfig()
 logging.getLogger().setLevel(logging.DEBUG)
+# -- default import packages
 
 # gps
 
@@ -171,13 +173,19 @@ class Car( Robot ) :
 
         if state is State.FORWARD :
             target = self.move_forward_thread 
+
             self.blink_led( self.fw_led )
         elif state is State.BACKWARD :
             target = self.move_backward_thread
+
             self.blink_led( self.bw_led )
         elif state is State.LEFT :
+            target = self.move_left_thread
+
             self.blink_led( self.lft_led )
         elif state is State.RIGHT :
+            target = self.move_right_thread
+
             self.blink_led( self.rht_led )
         elif state is State.STOP :
             pass
@@ -198,28 +206,38 @@ class Car( Robot ) :
         self.move_linear_thread( req_no, super().backward)
     pass
 
-    # 전후진 공통 스레드
-    def move_linear_thread(self, req_no, move_fun) :
-        sleep_sec = 0.1
+    # 좌회전 스레드
+    def move_left_thread(self, req_no) : 
+        self.move_linear_thread( req_no, super().left)
+    pass
 
-        then = time.time()
+    # 우회전 스레드
+    def move_right_thread(self, req_no) : 
+        self.move_linear_thread( req_no, super().right)
+    pass
+
+    # 전후진 공통 스레드
+    def move_linear_thread(self, req_no, move_fun) : 
+        sleep_sec = 0.095
+        duration = 1.0
 
         speed = 1.0
 
         pi = math.pi
         idx = 0 
-        
 
+        start = time.time()
         while req_no is self.req_no :
             now = time.time()
-            elapsed = now - then
+            elapsed = now - start
             
-            if idx and elapsed < sleep_sec : 
-                sleep( sleep_sec - elapsed )  
-                continue 
+            if not idx : 
+                speed = 1.0
+            elif elapsed >= duration :
+                speed = 0.0
+            else :
+                speed = math.cos( pi*elapsed/duration/2.0 )
             pass 
-
-            speed = math.cos( pi*idx/20.0 )
 
             print( "[%03d] elapsed = %2.4f  speed = %2.4f" % ( idx, elapsed, speed ) )  
 
@@ -230,9 +248,7 @@ class Car( Robot ) :
             if speed : 
                 move_fun(speed)
 
-                sleep( sleep_sec )
-
-                then = time.time()
+                sleep( sleep_sec ) 
             else :
                 req_no = -1 
                 self.stop()
@@ -241,7 +257,7 @@ class Car( Robot ) :
             idx += 1
         pass
     pass
-    # -- move_forward_thread
+    # -- move_forward_thread 
 
     # 모든 LED 등을 끈다.
     def turn_off_all( self ) :

@@ -21,8 +21,10 @@ for pkg in [ "flask", "OpenSSL, pyopenssl", "serial, pyserial", "pynmea2" ] :
 	check_pkg( pkg )
 pass
 
+import time
 from time import sleep
 import threading
+import math
 
 import logging
 logging.basicConfig()
@@ -157,24 +159,89 @@ class Car( Robot ) :
     def proc_common(self):
         self.req_no += 1
 
+        req_no = self.req_no
+
         state = self.state
 
+        self.move_common( req_no, state )
+    pass
+
+    def move_common(self, req_no, state) :
+        target = None
+
         if state is State.FORWARD :
+            target = self.move_forward_thread 
             self.blink_led( self.fw_led )
-        elif state is State.STOP :
-            pass
         elif state is State.BACKWARD :
+            target = self.move_backward_thread
             self.blink_led( self.bw_led )
         elif state is State.LEFT :
             self.blink_led( self.lft_led )
         elif state is State.RIGHT :
             self.blink_led( self.rht_led )
+        elif state is State.STOP :
+            pass
+        pass
+
+        if target : 
+            threading.Thread(target=target, args =(req_no,)).start()
         pass
     pass
 
-    def move_common(self) :
+    # 전진 스레드
+    def move_forward_thread(self, req_no) : 
+        self.move_linear_thread( req_no, super().forward)
+    pass
+
+    # 전진 스레드
+    def move_backward_thread(self, req_no) : 
+        self.move_linear_thread( req_no, super().backward)
+    pass
+
+    # 전후진 공통 스레드
+    def move_linear_thread(self, req_no, move_fun) :
+        sleep_sec = 0.1
+
+        then = time.time()
+
+        speed = 1.0
+
+        pi = math.pi
+        idx = 0 
+        
+
+        while req_no is self.req_no :
+            now = time.time()
+            elapsed = now - then
+            
+            if idx and elapsed < sleep_sec : 
+                sleep( sleep_sec - elapsed )  
+                continue 
+            pass 
+
+            speed = math.cos( pi*idx/20.0 )
+
+            print( "[%03d] elapsed = %2.4f  speed = %2.4f" % ( idx, elapsed, speed ) )  
+
+            if speed < 0 :
+                speed = 0
+            pass
+            
+            if speed : 
+                move_fun(speed)
+
+                sleep( sleep_sec )
+
+                then = time.time()
+            else :
+                req_no = -1 
+                self.stop()
+            pass
+
+            idx += 1
         pass
     pass
+    # -- move_forward_thread
 
     # 모든 LED 등을 끈다.
     def turn_off_all( self ) :
@@ -247,6 +314,8 @@ class Car( Robot ) :
 
         super().stop()
         self.turn_off_all() 
+
+        print( "STATE = %s" % self.state )
 
         self.proc_common() 
     pass 

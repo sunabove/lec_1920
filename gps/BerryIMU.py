@@ -251,7 +251,7 @@ class BerryIMU :
 
         # calibrate IMU
         if not self.calibrated : 
-            self.calibrate_imu()
+            #self.calibrate_imu()
 
             self.calibrated = 2
         pass

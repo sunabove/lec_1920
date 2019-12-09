@@ -21,6 +21,9 @@ for pkg in [ "flask", "OpenSSL, pyopenssl", "serial, pyserial", "pynmea2" ] :
 	check_pkg( pkg )
 pass
 
+from time import sleep
+import threading
+
 import logging
 logging.basicConfig()
 logging.getLogger().setLevel(logging.DEBUG)
@@ -92,12 +95,14 @@ from gpiozero import Robot, LED
 
 class Car( Robot ) :
 
-    def __init__(self, *, pwm=True, pin_factory=None):
+    # 생성자.
+    def __init__(self):
+        self.req_no = 0 
         
         left_motor = (22, 23) # 왼쪽 모터
         right_motor = (9, 25)  # 오른쪽 모터
         
-        super().__init__( left_motor, right_motor, pwm, pin_factory )
+        super().__init__( left_motor, right_motor)
 
         self.state = "STOP"
 
@@ -109,6 +114,34 @@ class Car( Robot ) :
         print("A car is ready.")
     pass
 
+    # LED 깜빡이기
+    def blink_led_thread( self, led ) :
+        threading.Thread(target=self.blink_led_impl, args =( led, ) ).start()
+    pass
+
+    # LED 깜빡이기 구현
+    def blink_led_impl( self, led ) :
+        req_no = self.req_no
+        duration = 0.2
+        led_on = True 
+        while( req_no is self.req_no ) :
+            if led_on : 
+                led.on()
+            else :
+                led.off()
+            pass
+            sleep( duration ) 
+
+            led_on = not led_on 
+        pass
+    pass
+
+    # 공통 프로세스
+    def proc_common(self):
+        self.req_no += 1
+    pass
+
+    # 모든 LED 등을 끈다.
     def turn_off_all( self ) :
         self.fw_led.off()
         self.bw_led.off()
@@ -116,7 +149,10 @@ class Car( Robot ) :
         self.rht_led.off()
     pass
 
+    # 전진
     def forward(self, speed=1):
+        self.proc_common()
+
         super().forward(speed)
         self.turn_off_all()
         self.fw_led.on() 
@@ -124,39 +160,62 @@ class Car( Robot ) :
         self.state = "FORWARD" 
     pass
 
+    # 후진
     def backward(self, speed=1):
+        self.proc_common()
+
         super().backward(speed)
         self.turn_off_all()
         self.bw_led.on()
 
         self.state = "BACKWARD" 
+
+        self.blink_led_thread( self.bw_led )
     pass
 
+    # 좌회전
     def left(self, speed=1):
+        self.proc_common()
+
         super().left( speed )
         self.turn_off_all()
         self.lft_led.on()
 
         self.state = "LEFT" 
+
+        self.blink_led_thread( self.lft_led )
     pass
 
+    # 우회전
     def right(self, speed=1):
+        self.proc_common()
+
         super().right( speed )
         self.turn_off_all()
         self.rht_led.on()
 
         self.state = "RIGHT" 
+
+        self.blink_led_thread( self.rht_led )
     pass
 
+    # 뒤로 
     def reverse(self):
+        self.proc_common()
+
         super().reverse()
         self.turn_off_all()
         self.bw_led.off()
 
         self.state = "REVERSE" 
+
+        self.blink_led_thread( self.bw_led )
     pass
 
+    # 멈춤.
     def stop(self):
+        self.proc_common()
+
         super().stop()
         self.turn_off_all()
         self.state = "STOP" 

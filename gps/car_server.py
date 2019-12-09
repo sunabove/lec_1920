@@ -58,8 +58,7 @@ class Gps :
 
             gps_parse_cnt = self.gps_parse_cnt 
             
-            msg.gps_parse_cnt = gps_parse_cnt 
-            
+            msg.gps_parse_cnt = gps_parse_cnt
 
             self.msg = msg 
 

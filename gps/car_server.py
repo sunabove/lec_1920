@@ -561,22 +561,25 @@ def car_json():
 pass
 
 @app.route('/send_me_curr_pos.json')
-def send_me_curr_pos(): 
-    json = ""
+def send_me_curr_pos():
+    init_system()
     
     curr_msg = ads.gps.curr_msg 
 
     if not curr_msg :
-        return jsonify( valid = 0 , )
+        return { "valid" : 0 }, 400
     pass
 
-    return jsonify(
-        gps_parse_cnt = curr_msg.gps_parse_cnt, 
-        timestamp =  curr_msg.timestamp,
-        lat = curr_msg.lat,
-        lon = curr_msg.lon,
-        altitude = curr_msg.altitude  ,
-    )
+    json = {
+        "valid" : 1, 
+        "gps_parse_cnt" : "%s" % curr_msg.gps_parse_cnt, 
+        "timestamp" : "%s" % curr_msg.timestamp,
+        "lat" : "%s" % curr_msg.lat,
+        "lon" : "%s" % curr_msg.lon, 
+        "altitude" : "%s" %  curr_msg.altitude,
+    }
+
+    return json, 400
 pass 
 
 # -- web by flask framewwork  

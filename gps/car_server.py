@@ -432,8 +432,7 @@ pass
 
 # camera
 import cv2
-import numpy as np
-print( "# OpenCV version %s" % cv2.__version__ )
+import numpy as np 
 
 class Camera(object):
     def __init__(self):
@@ -566,27 +565,37 @@ class AdsSystem :
         if not self.init :
             print( "# System initiating ...")
 
+            print( "# OpenCV version %s" % cv2.__version__ )
+
             self.init = 1
             self.gps.read_gps_thread()
             self.berryIMU.read_imu_thread()
             self.init = 2
 
-            print( "# System Inited.")
+            print( "# System is initiated.")
         pass
     pass
 pass
 
 ads = None 
 
-def init_system() :
-    global ads
-    if not ads :
-        ads = AdsSystem()
-        ads.initSystem()
+def create_app():
+    app = Flask(__name__)
+    
+    def run_on_start(*args, **argv):
+        global ads
+        if not ads :
+            ads = AdsSystem()
+            ads.initSystem()
+        pass 
     pass 
+
+    run_on_start()
+
+    return app
 pass
 
-app = Flask(__name__) 
+app = create_app() 
 
 def gen(camera):
     global ads 
@@ -597,23 +606,25 @@ def gen(camera):
     pass
 pass 
 
+@app.before_first_request
+def _run_on_start(a_string):
+    pass
+pass
+
 @app.route( '/' )
 @app.route( '/index.html' )
 @app.route( '/index.htm' )
-def index():
-    init_system()
+def index(): 
     return render_template('index.html')
 pass
 
 @app.route('/info.html')
-def info():
-    init_system()
+def info(): 
     return render_template('info.html')
 pass
 
 @app.route('/video_feed')
-def video_feed():
-    init_system()
+def video_feed(): 
     return Response(gen(ads.camera), mimetype='multipart/x-mixed-replace; boundary=frame')
 pass
 
@@ -671,8 +682,7 @@ def car_move_json():
 pass
 
 @app.route('/send_me_curr_pos.json')
-def send_me_curr_pos():
-    init_system()
+def send_me_curr_pos(): 
     
     if ads.init < 2 :
         return { "valid" : 0 }, 200

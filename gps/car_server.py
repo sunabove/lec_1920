@@ -579,23 +579,15 @@ pass
 
 ads = None 
 
-def create_app():
-    app = Flask(__name__)
-    
-    def run_on_start(*args, **argv):
-        global ads
-        if not ads :
-            ads = AdsSystem()
-            ads.initSystem()
-        pass 
+app = Flask(__name__)
+
+def init_system():
+    global ads
+    if not ads :
+        ads = AdsSystem()
+        ads.initSystem()
     pass 
-
-    run_on_start()
-
-    return app
-pass
-
-app = create_app() 
+pass 
 
 def gen(camera):
     global ads 
@@ -607,8 +599,8 @@ def gen(camera):
 pass 
 
 @app.before_first_request
-def _run_on_start(a_string):
-    pass
+def activate_job():
+    init_system()
 pass
 
 @app.route( '/' )
@@ -722,8 +714,8 @@ pass
 if __name__ == '__main__':
     use_ssl = 0
     if use_ssl : 
-        app.run(host='0.0.0.0', port=443, ssl_context='adhoc', debug=True)
+        app.run(host='0.0.0.0', port=443, ssl_context='adhoc', debug=True, threaded=True)
     else :
-        app.run(host='0.0.0.0', port=80, debug=True) 
+        app.run(host='0.0.0.0', port=80, debug=True, threaded=True) 
     pass 
 pass

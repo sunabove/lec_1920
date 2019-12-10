@@ -567,7 +567,7 @@ def send_me_curr_pos():
     curr_msg = ads.gps.curr_msg 
 
     if not curr_msg :
-        return { "valid" : 0 }, 400
+        return { "valid" : 0 }, 200
     pass
 
     json = {
@@ -579,7 +579,7 @@ def send_me_curr_pos():
         "altitude" : "%s" %  curr_msg.altitude,
     }
 
-    return json, 400
+    return json, 200
 pass 
 
 # -- web by flask framewwork  

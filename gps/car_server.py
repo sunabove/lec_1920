@@ -107,6 +107,7 @@ class State :
     LEFT = "LEFT"
     RIGHT = "RIGHT" 
     REVERSE = "REVERSE"
+    MOVE = "MOVE"
 pass
     
 from gpiozero import Robot, LED
@@ -119,6 +120,9 @@ class Car( Robot ) :
 
         self.forward_duration = 1.0
         self.rotate_duration  = 0.2    
+
+        self.pitchDeg = 0 
+        self.rollDeg = 0 
         
         left_motor = (22, 23) # 왼쪽 모터
         right_motor = (9, 25)  # 오른쪽 모터
@@ -147,7 +151,7 @@ class Car( Robot ) :
         led_on = True 
         
         duration=( 0.3, 0.3 )
-        if state is State.FORWARD :
+        if state in( State.FORWARD, State.MOVE ) :
             duration = (3, 0.3)
         pass
 
@@ -179,7 +183,9 @@ class Car( Robot ) :
     def move_common(self, req_no, state) :
         target = None
 
-        if state is State.FORWARD :
+        if state is State.MOVE :
+            target = self.move_thread 
+        elif state is State.FORWARD :
             target = self.move_forward_thread 
 
             self.blink_led( self.fw_led )
@@ -266,7 +272,68 @@ class Car( Robot ) :
             idx += 1
         pass
     pass
-    # -- move_forward_thread 
+    # -- move_forward_thread  
+
+    # 이동 스레드
+    def move_thread(self, req_no ) : 
+        '''
+            if (15 <= roll) {
+                motion = Motion.RIGHT ;
+            } else if ( -15 >= roll) {
+                motion = Motion.LEFT ;
+            } else if ( 45 <= pitch) {
+                motion = Motion.FORWARD ;
+            } else if ( 32 >= pitch) {
+                motion = Motion.BACKWARD ;
+            } else {
+                motion = Motion.STOP ;
+            }
+        '''
+        
+        sleep_sec = 0.095  
+        idx = 0 
+
+        start = time.time()
+        while req_no is self.req_no :
+            now = time.time()
+            elapsed = now - start 
+
+            pitch = self.pitchDeg
+            roll = self.rollDeg
+
+            speed  = 0.3
+
+            if 32 >= pitch :
+                speed = pitch/90.0
+                super().backward( speed )
+
+                print( "[%03d] move back elapsed = %2.4f  speed = %2.4f" % ( idx, elapsed, speed ) )  
+
+                self.blink_led( self.bw_led )
+            elif 180 < roll :
+                speed = pitch/90.0
+                curve_left = (360 - roll)/180.0
+                super().forward(speed, curve_left = curve_left)
+
+                print( "[%03d] move left elapsed = %2.4f  speed = %2.4f, curve_left = %2.4f" % ( idx, elapsed, speed, curve_left ) )  
+                
+                self.blink_led( self.lft_led )
+            elif 180 > roll :
+                speed = pitch/90.0
+                curve_right  = roll/180.0
+                super().forward(speed, curve_right = curve_right)
+
+                print( "[%03d] move right elapsed = %2.4f  speed = %2.4f, curve_right = %2.4f" % ( idx, elapsed, speed, curve_right ) )  
+
+                self.blink_led( self.rht_led )
+            pass
+
+            sleep( sleep_sec ) 
+
+            idx += 1
+        pass
+    pass
+    # -- move thread 
 
     # 모든 LED 등을 끈다.
     def turn_off_all( self ) :
@@ -274,6 +341,20 @@ class Car( Robot ) :
         self.bw_led.off()
         self.lft_led.off()
         self.rht_led.off()
+    pass
+
+    # 이동
+    def move(self, pitchDeg, rollDeg ):
+
+        self.state = State.MOVE
+        self.pitchDeg = pitchDeg 
+        self.rollDeg = rollDeg 
+
+        super().forward( 0.3 )
+        self.turn_off_all()
+        self.fw_led.on() 
+
+        self.proc_common()
     pass
 
     # 전진
@@ -556,6 +637,32 @@ def car_json():
         car.right() 
     else:
         car.stop() 
+    pass
+
+    return jsonify(
+            motion=motion,
+            req_no = ads.req_no,
+        )
+pass
+
+@app.route('/car_move.json') 
+def car_move_json():
+    global ads
+    car = ads.car
+    ads.req_no += 1
+    motion = request.args.get('motion').lower()
+
+    pitchDeg = float( request.args.get('pitchDeg').lower() ) % 360
+    rollDeg = float( request.args.get('rollDeg').lower() ) % 360
+
+    print( "car_move motion = %s" % motion )
+
+    print( "car_move motion = %s" % motion )
+
+    if "stop" == motion :
+        car.stop()  
+    else:
+        car.move( pitchDeg, rollDeg ) 
     pass
 
     return jsonify(

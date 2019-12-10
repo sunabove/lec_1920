@@ -415,8 +415,8 @@ class Camera(object):
         imu = ads.berryIMU
         
         imuData = imu.imuData
-        txt = ""        
-        
+
+        txt = ""
 
         # gyro angle text drawing
         if 0 : 
@@ -564,19 +564,33 @@ pass
 def send_me_curr_pos():
     init_system()
     
+    if ads.init < 2 :
+        return { "valid" : 0 }, 200
+    pass
+
     curr_msg = ads.gps.curr_msg 
 
     if not curr_msg :
         return { "valid" : 0 }, 200
     pass
 
+    yaw_deg = -1
+    imu = ads.berryIMU
+    if imu : 
+        imuData = imu.imuData
+        if imuData : 
+            yaw_deg = imuData.yaw_deg
+        pass
+    pass
+
     json = {
         "valid" : 1, 
         "gps_parse_cnt" : "%s" % curr_msg.gps_parse_cnt, 
         "timestamp" : "%s" % curr_msg.timestamp,
-        "lat" : "%s" % curr_msg.lat,
-        "lon" : "%s" % curr_msg.lon, 
+        "latitude" : "%s" % curr_msg.latitude,
+        "longitude" : "%s" % curr_msg.longitude, 
         "altitude" : "%s" %  curr_msg.altitude,
+        "heading" : "%s" % yaw_deg,
     }
 
     return json, 200

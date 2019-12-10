@@ -549,7 +549,6 @@ pass
 # web by flask framewwork
 from flask import Flask, render_template, Response, jsonify
 from flask import request 
-from flask_socketio import SocketIO, emit
 
 from BerryIMU import *
 

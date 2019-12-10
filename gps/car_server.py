@@ -572,7 +572,7 @@ class AdsSystem :
             self.berryIMU.read_imu_thread()
             self.init = 2
 
-            print( "# System is initiated.")
+            print( "# System is initiated.\n")
         pass
     pass
 pass

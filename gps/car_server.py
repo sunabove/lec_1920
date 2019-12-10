@@ -17,7 +17,7 @@ def check_pkg( pkg ) :
 	pass
 pass
 
-for pkg in [ "flask", "flask_socketio", "OpenSSL, pyopenssl", "serial, pyserial", "pynmea2" ] :
+for pkg in [ "flask", "OpenSSL, pyopenssl", "serial, pyserial", "pynmea2" ] :
 	check_pkg( pkg )
 pass
 
@@ -39,13 +39,11 @@ import pynmea2
 
 class Gps : 
     def __init__(self):
-        self.gps_parse_cnt = 0
-        self.lat = 0
-        self.lon = 0
-        self.alt = 0 
-        self.msg = None
         self.dbg = 0
         self.gps_cnt = 0 
+        self.gps_parse_cnt = 0 
+        self.msg = None
+        self.curr_msg = None  
     pass
 
     def parseGPS(self, str):
@@ -54,6 +52,8 @@ class Gps :
 
             if msg.lat :
                 self.gps_parse_cnt += 1
+
+                self.curr_msg = msg
             pass
 
             gps_parse_cnt = self.gps_parse_cnt 
@@ -502,9 +502,7 @@ def init_system() :
     pass 
 pass
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret!'
-socketio = SocketIO(app)
+app = Flask(__name__) 
 
 def gen(camera):
     global ads 
@@ -562,32 +560,26 @@ def car_json():
         )
 pass
 
-# -- web by flask framewwork
+@app.route('/send_me_curr_pos.json')
+def send_me_curr_pos(): 
+    json = ""
+    
+    curr_msg = ads.gps.curr_msg 
 
-# socket io
+    if not curr_msg :
+        return jsonify( valid = 0 , )
+    pass
 
-@app.route('/socket_io_test.html')
-def socket_io_test(): 
-    return render_template('socket_io_test.html')
-pass
+    return jsonify(
+        gps_parse_cnt = curr_msg.gps_parse_cnt, 
+        timestamp =  curr_msg.timestamp,
+        lat = curr_msg.lat,
+        lon = curr_msg.lon,
+        altitude = curr_msg.altitude  ,
+    )
+pass 
 
-@socketio.on('my event', namespace='/test')
-def test_message_01(message):
-    emit('my response', {'data': message['data']})
-
-@socketio.on('my broadcast event', namespace='/test')
-def test_messag_02(message):
-    emit('my response', {'data': message['data']}, broadcast=True)
-
-@socketio.on('connect', namespace='/test')
-def test_connect():
-    emit('my response', {'data': 'Connected'})
-
-@socketio.on('disconnect', namespace='/test')
-def test_disconnect():
-    print('Client disconnected') 
-
-# -- socket io
+# -- web by flask framewwork  
 
 if __name__ == '__main__':
     use_ssl = 0
@@ -595,8 +587,5 @@ if __name__ == '__main__':
         app.run(host='0.0.0.0', port=443, ssl_context='adhoc', debug=True)
     else :
         app.run(host='0.0.0.0', port=80, debug=True) 
-    pass
-
-    socketio.run(app)
-        
+    pass 
 pass

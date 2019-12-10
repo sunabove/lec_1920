@@ -207,7 +207,7 @@ class Car( Robot ) :
 
         if target : 
             # To filter out finished threads
-            threads = [t for t in threads if t.is_alive()]
+            #threads = [t for t in threads if t.is_alive()]
 
             threading.Thread(target=target, args=(req_no,)).start()
         pass

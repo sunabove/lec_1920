@@ -484,10 +484,14 @@ class AdsSystem :
 
     def initSystem(self) : 
         if not self.init :
+            print( "# System initiating ...")
+
             self.init = 1
             self.gps.read_gps_thread()
             self.berryIMU.read_imu_thread()
             self.init = 2
+
+            print( "# System Inited.")
         pass
     pass
 pass
@@ -580,6 +584,7 @@ def send_me_curr_pos():
         imuData = imu.imuData
         if imuData : 
             yaw_deg = imuData.yaw_deg
+            yaw_deg = yaw_deg % 360
         pass
     pass
 

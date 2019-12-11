@@ -22,23 +22,37 @@ for pkg in [ "flask", "flask_socketio", "eventlet" ] :
 pass
 
 from flask import Flask, render_template
-from flask_socketio import SocketIO, join_room, emit 
+from flask_socketio import SocketIO, emit
 
-# initialize Flask
 app = Flask(__name__)
 socketio = SocketIO(app)
-ROOMS = {} # dict to track active rooms
+
+values = {
+    'slider1': 25,
+    'slider2': 0,
+}
 
 @app.route('/')
 def index():
-    """Serve the index HTML"""
-    return render_template('flask-websocket-index.html')
+    return render_template('websocket-index.html',**values)
+pass
 
-@socketio.on('create')
-def on_create(data):
-    """Create a game lobby"""  
-    emit('join_room', {'room': 1})
+@socketio.on('connect')
+def test_connect():
+    emit('after connect',  {'data':'Lets dance'})
+pass
+
+slider_cnt = 0 
+
+@socketio.on('Slider value changed')
+def value_changed(message):
+	global slider_cnt
+	slider_cnt += 1
+	print( "[%04d] Slider value changed" % slider_cnt )
+	values[message['who']] = message['data']
+	emit('update value', message, broadcast=True)
+pass
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    socketio.run(app, host='0.0.0.0', port=80, debug=True)
 pass

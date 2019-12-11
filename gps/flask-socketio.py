@@ -39,7 +39,7 @@ pass
 
 @socketio.on('connect')
 def test_connect():
-    emit('after connect',  {'data':'Lets dance'})
+    emit('after connect',  {'connect':'Lets dance'})
 pass
 
 slider_cnt = 0 

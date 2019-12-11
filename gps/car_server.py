@@ -17,7 +17,7 @@ def check_pkg( pkg ) :
 	pass
 pass
 
-for pkg in [ "flask", "OpenSSL, pyopenssl", "serial, pyserial", "pynmea2" ] :
+for pkg in [ "flask", "flask_socketio", "OpenSSL, pyopenssl", "serial, pyserial", "pynmea2" ] :
 	check_pkg( pkg )
 pass
 
@@ -440,7 +440,7 @@ import numpy as np
 class Camera(object):
     def __init__(self):
         self.video = cv2.VideoCapture(0)
-        self.video.set(cv2.CAP_PROP_FPS, 24)
+        self.video.set(cv2.CAP_PROP_FPS, 15)
         self.video.set(cv2.CAP_PROP_FOURCC,cv2.VideoWriter_fourcc(*'X264'))
     pass
     
@@ -526,9 +526,9 @@ class Camera(object):
 
         # We are using Motion JPEG, but OpenCV defaults to capture raw images,
         # so we must encode it into JPEG in order to correctly display the video stream.
-        ret, jpeg = cv2.imencode('.jpg', img)
+        _, jpg = cv2.imencode('.jpg', img) 
         
-        return jpeg.tobytes()
+        return jpg.tobytes()
     pass
 
     # opencv 이미지에 텍스트를 그린다.
@@ -714,11 +714,42 @@ pass
 
 # -- web by flask framewwork  
 
+# socket io
+
+from flask_socketio import SocketIO, emit
+
+socketio = SocketIO(app)
+
+@socketio.on('connect')
+def socket_connect():
+    emit('after connect',  {'connect': 1})
+pass
+
+slider_cnt = 0 
+
+@socketio.on('Slider value changed')
+def value_changed(message):
+	global slider_cnt
+	slider_cnt += 1
+	print( "[%04d] Slider value changed" % slider_cnt )
+	values[message['who']] = message['data']
+	emit('update value', message, broadcast=True)
+pass 
+
+# -- socket io 
+
 if __name__ == '__main__':
     use_ssl = 0
-    if use_ssl : 
+    use_socket = 1 
+
+    if use_socket :
+        print( "## SocketIO Web")
+        socketio.run(app, host='0.0.0.0', port=80, debug=True)
+    elif use_ssl : 
+        print( "## SSL WEB ")
         app.run(host='0.0.0.0', port=443, ssl_context='adhoc', debug=True, threaded=True)
     else :
+        print( "## Normal WEB")
         app.run(host='0.0.0.0', port=80, debug=True, threaded=True) 
     pass 
 pass

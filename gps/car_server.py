@@ -685,18 +685,6 @@ def send_me_curr_pos_json():
         return { "valid" : 0 }, 200
     pass
 
-    json = self.get_curr_pos_json()
-
-    return json, 200
-pass 
-
-def get_curr_pos_json():
-    curr_msg = ads.gps.curr_msg 
-
-    if not curr_msg :
-        return { "valid" : 0 }, 200
-    pass
-
     yaw_deg = -1
     imu = ads.berryIMU
     if imu : 
@@ -705,6 +693,12 @@ def get_curr_pos_json():
             yaw_deg = imuData.yaw_deg
             yaw_deg = yaw_deg % 360
         pass
+    pass
+
+    curr_msg = ads.gps.curr_msg 
+
+    if not curr_msg :
+        return { "valid" : 0 }, 200
     pass
 
     json = {
@@ -717,61 +711,16 @@ def get_curr_pos_json():
         "heading" : "%s" % yaw_deg,
     }
 
-    return json
+    return json, 200
 pass
 
-# -- web by flask framewwork  
-
-# socket io
-
-from flask_socketio import SocketIO, emit
-
-socketio = SocketIO(app)
-
-@app.route('/socket.html')
-def socket_test():
-    return render_template('websocket-index.html' )
-pass
-
-slider_cnt = 0 
-socket_cnt = 0 
-
-@socketio.on('Slider value changed')
-def slider_value_changed(message):
-	global slider_cnt
-	slider_cnt += 1
-	print( "[%04d] Slider value changed" % slider_cnt ) 
-	emit('update value', slider_cnt, broadcast=True)
-pass 
-
-@socketio.on('connect')
-def socket_connect():
-    print( "socket connected." )
-
-    emit( 'send_me_curr_pos',  1 )
-pass
-
-@socketio.on('send_me_curr_pos')
-def send_me_curr_pos(message):
-    global socket_cnt
-    socket_cnt += 1
-    print( "[%04d] send_me_curr_pos" % socket_cnt ) 
-
-    json = get_curr_pos_json() 
-
-    emit( 'send_me_curr_pos', json, broadcast=True)
-pass
-
-# -- socket io 
+# -- web by flask framewwork   
 
 if __name__ == '__main__':
     use_ssl = 0
     use_socket = 1 
 
-    if use_socket :
-        print( "## SocketIO Web")
-        socketio.run(app, host='0.0.0.0', port=80, debug=True)
-    elif use_ssl : 
+    if use_ssl : 
         print( "## SSL WEB ")
         app.run(host='0.0.0.0', port=443, ssl_context='adhoc', debug=True, threaded=True)
     else :

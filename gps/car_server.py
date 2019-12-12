@@ -748,7 +748,7 @@ pass
 def socket_connect():
     print( "socket connected." )
 
-    emit( 'send_me_curr_pos',  {'connect': 1})
+    emit( 'connected',  1 )
 pass
 
 @socketio.on('send_me_curr_pos')

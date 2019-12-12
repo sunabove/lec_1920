@@ -433,7 +433,7 @@ pass
 
 # -- car
 
-# camera
+# camera 
 import cv2
 import numpy as np 
 
@@ -488,7 +488,8 @@ class Camera(object):
         if not msg :
             txt = "No GPS"
         else :  
-            format = "[%06d] GPS %s %s  %s %s  %s%s H"
+            format = "[%06d] GPS %s %s  %s %s  %s%s H" 
+
             txt = format % ( msg.gps_parse_cnt, msg.lat, msg.lat_dir, msg.lon, msg.lon_dir, msg.altitude, msg.altitude_units )
         pass
 
@@ -533,10 +534,11 @@ class Camera(object):
 
     # opencv 이미지에 텍스트를 그린다.
     def putTextLine(self, img, txt, x, y ) :
+        # /usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf
         font = cv2.FONT_HERSHEY_SIMPLEX # font
-        fs = 0.4  # font size(scale)
-        ft = 1    # font thickness
         
+        fs = 0.4  # font size(scale)
+        ft = 1    # font thickness 
 
         bg_color = (255, 255, 255) # text background color
         fg_color = (255,   0,   0) # text foreground color
@@ -677,12 +679,18 @@ def car_move_json():
 pass
 
 @app.route('/send_me_curr_pos.json')
-def send_me_curr_pos(): 
+def send_me_curr_pos_json(): 
     
     if ads.init < 2 :
         return { "valid" : 0 }, 200
     pass
 
+    json = self.get_curr_pos_json()
+
+    return json, 200
+pass 
+
+def get_curr_pos_json():
     curr_msg = ads.gps.curr_msg 
 
     if not curr_msg :
@@ -709,8 +717,8 @@ def send_me_curr_pos():
         "heading" : "%s" % yaw_deg,
     }
 
-    return json, 200
-pass 
+    return json
+pass
 
 # -- web by flask framewwork  
 
@@ -725,20 +733,34 @@ def socket_test():
     return render_template('websocket-index.html' )
 pass
 
-@socketio.on('connect')
-def socket_connect():
-    emit('after connect',  {'connect': 1})
-pass
-
 slider_cnt = 0 
+socket_cnt = 0 
 
 @socketio.on('Slider value changed')
-def value_changed(message):
+def slider_value_changed(message):
 	global slider_cnt
 	slider_cnt += 1
 	print( "[%04d] Slider value changed" % slider_cnt ) 
 	emit('update value', slider_cnt, broadcast=True)
 pass 
+
+@socketio.on('connect')
+def socket_connect():
+    print( "socket connected." )
+
+    emit( 'send_me_curr_pos',  {'connect': 1})
+pass
+
+@socketio.on('send_me_curr_pos')
+def send_me_curr_pos(message):
+    global socket_cnt
+    socket_cnt += 1
+    print( "[%04d] send_me_curr_pos" % socket_cnt ) 
+
+    json = get_curr_pos_json() 
+
+    emit( 'curr_pos', json, broadcast=True)
+pass
 
 # -- socket io 
 

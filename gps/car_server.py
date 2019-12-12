@@ -720,6 +720,11 @@ from flask_socketio import SocketIO, emit
 
 socketio = SocketIO(app)
 
+@app.route('/socket.html')
+def socket_test():
+    return render_template('websocket-index.html' )
+pass
+
 @socketio.on('connect')
 def socket_connect():
     emit('after connect',  {'connect': 1})
@@ -731,9 +736,8 @@ slider_cnt = 0
 def value_changed(message):
 	global slider_cnt
 	slider_cnt += 1
-	print( "[%04d] Slider value changed" % slider_cnt )
-	values[message['who']] = message['data']
-	emit('update value', message, broadcast=True)
+	print( "[%04d] Slider value changed" % slider_cnt ) 
+	emit('update value', slider_cnt, broadcast=True)
 pass 
 
 # -- socket io 

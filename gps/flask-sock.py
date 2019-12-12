@@ -54,5 +54,6 @@ def value_changed(message):
 pass
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=80, debug=True)
+	print( "## socket io web" )
+	socketio.run(app, host='0.0.0.0', port=80, debug=True)
 pass

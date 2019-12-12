@@ -748,7 +748,7 @@ pass
 def socket_connect():
     print( "socket connected." )
 
-    emit( 'connected',  1 )
+    emit( 'send_me_curr_pos',  1 )
 pass
 
 @socketio.on('send_me_curr_pos')
@@ -759,7 +759,7 @@ def send_me_curr_pos(message):
 
     json = get_curr_pos_json() 
 
-    emit( 'curr_pos', json, broadcast=True)
+    emit( 'send_me_curr_pos', json, broadcast=True)
 pass
 
 # -- socket io 

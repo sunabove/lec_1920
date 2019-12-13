@@ -107,7 +107,7 @@ class State :
     LEFT = "LEFT"
     RIGHT = "RIGHT" 
     REVERSE = "REVERSE"
-    MOVE = "MOVE"
+    DRIVE = "DRIVE"
 pass
     
 from gpiozero import Robot, LED
@@ -151,7 +151,7 @@ class Car( Robot ) :
         led_on = True 
         
         duration=( 0.3, 0.3 )
-        if state in( State.FORWARD, State.MOVE ) :
+        if state in( State.FORWARD, State.DRIVE ) :
             duration = (3, 0.3)
         pass
 
@@ -183,8 +183,8 @@ class Car( Robot ) :
     def move_common(self, req_no, state) :
         target = None
 
-        if state is State.MOVE :
-            target = self.move_thread 
+        if state is State.DRIVE :
+            target = self.drive_thread 
         elif state is State.FORWARD :
             target = self.move_forward_thread 
 
@@ -278,7 +278,7 @@ class Car( Robot ) :
     # -- move_forward_thread  
 
     # 이동 스레드
-    def move_thread(self, req_no ) : 
+    def drive_thread(self, req_no ) : 
         '''
             if (15 <= roll) {
                 motion = Motion.RIGHT ;
@@ -346,10 +346,10 @@ class Car( Robot ) :
         self.rht_led.off()
     pass
 
-    # 이동
-    def move(self, pitchDeg, rollDeg ):
+    # 운전하기 
+    def drive(self, pitchDeg, rollDeg ):
 
-        self.state = State.MOVE
+        self.state = State.DRIVE
         self.pitchDeg = pitchDeg 
         self.rollDeg = rollDeg 
 
@@ -669,7 +669,7 @@ def car_drive_json():
     if "stop" == motion :
         car.stop()  
     else:
-        car.move( pitchDeg, rollDeg ) 
+        car.drive( pitchDeg, rollDeg ) 
     pass
 
     return jsonify(

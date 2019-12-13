@@ -720,9 +720,11 @@ def car_drive_json():
 
     if "autopilot" == motion :
         lat = float( request.args.get('lat') ) 
-        lon = float( request.args.get('lon') ) 
+        lng = float( request.args.get('lng') ) 
 
-        print( "car_move motion = %s, lat = %f, long = %f" % (motion, lat, lon ) ) 
+        print( "car_move motion = %s, lat = %f, long = %f" % (motion, lat, lng ) ) 
+
+        car.autoPilot( lat, lng )
     elif "stop" == motion :
         car.stop()  
     elif "left" == motion :

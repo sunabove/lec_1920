@@ -307,30 +307,42 @@ class Car( Robot ) :
             leds = [ ]
 
             speed = pitch/90.0
-            curve_left = (360 - roll)/180.0
+            curve_left   = (360 - roll)/180.0
             curve_right  = roll/180.0
 
-            if 32 <= pitch <= 180 : 
-                super().backward( speed )
-
-                print( "[%03d] drive back elapsed = %2.4f  speed = %2.4f" % ( idx, elapsed, speed ) )  
-
+            if 0 <= pitch <= 180 : 
                 leds.append( self.bw_led )
-            elif 180 < roll : 
-               
-                super().forward(speed, curve_left = curve_left)
 
-                print( "[%03d] drive left elapsed = %2.4f  speed = %2.4f, curve_left = %2.4f" % ( idx, elapsed, speed, curve_left ) )  
-                
-                leds.append( self.lft_led )
-            elif 180 > roll : 
-                
-                super().forward(speed, curve_right = curve_right)
+                if 10 <= roll <= 180 : 
+                    super().backward( speed , curve_left = curve_left )
+                    print( "[%03d] drive back elapsed = %2.4f  speed = %2.4f  curve_left = %2.4f" % ( idx, elapsed, speed, curve_left ) )  
 
-                print( "[%03d] drive right elapsed = %2.4f  speed = %2.4f, curve_right = %2.4f" % ( idx, elapsed, speed, curve_right ) )  
+                    leds.append( self.lft_led )
+                elif 180 <= roll <= 350 : 
+                    super().backward( speed , curve_right = curve_right )
+                    print( "[%03d] drive back elapsed = %2.4f  speed = %2.4f  curve_right = %2.4f" % ( idx, elapsed, speed, curve_right ) )  
 
-                leds.append( self.rht_led )
-            else :
+                    leds.append( self.rht_led )
+                else :
+                    super().backward( speed )
+                    print( "[%03d] drive back elapsed = %2.4f  speed = %2.4f" % ( idx, elapsed, speed ) )
+                pass
+            elif 180 < pitch <= 360 :   
+                leds.append( self.fw_led )
+
+                if 10 <= roll <= 180 : 
+                    super().forward( speed , curve_left = curve_left )
+                    print( "[%03d] drive forward elapsed = %2.4f  speed = %2.4f  curve_left = %2.4f" % ( idx, elapsed, speed, curve_left ) )  
+
+                    leds.append( self.lft_led )
+                elif 180 <= roll <= 350 : 
+                    super().forward( speed , curve_right = curve_right )
+                    print( "[%03d] drive forward elapsed = %2.4f  speed = %2.4f  curve_right = %2.4f" % ( idx, elapsed, speed, curve_right ) )  
+
+                    leds.append( self.rht_led )
+                else :
+                    super().forward( speed )
+                    print( "[%03d] drive forward elapsed = %2.4f  speed = %2.4f" % ( idx, elapsed, speed ) )
                 pass
             pass
 

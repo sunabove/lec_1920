@@ -300,7 +300,7 @@ class Car( Robot ) :
 
             if idx :
                 pass
-            elif 0 <= pitch <= 180 : 
+            elif 0 <= pitch <= 32 : # 후진
                 leds.append( self.bw_led ) 
 
                 if 10 <= roll <= 180 : 
@@ -321,7 +321,7 @@ class Car( Robot ) :
                     super().backward( speed )
                     print( "[%03d] drive back elapsed = %2.4f  speed = %2.4f" % ( idx, elapsed, speed ) )
                 pass
-            elif 180 < pitch <= 360 :   
+            else : # 전진
                 leds.append( self.fw_led )
 
                 if 10 <= roll <= 180 : 
@@ -358,7 +358,7 @@ class Car( Robot ) :
             pass
 
             prev = now
-            
+
             sleep( sleep_sec ) 
 
             idx += 1
@@ -686,9 +686,7 @@ def car_drive_json():
     pitchDeg = float( request.args.get('pitchDeg').lower() ) % 360
     rollDeg = float( request.args.get('rollDeg').lower() ) % 360
 
-    print( "car_move motion = %s" % motion )
-
-    print( "car_move motion = %s" % motion )
+    print( "car_move motion = %s, pitch = %3.2f, roll = %3.2f" % (motion, pitchDeg, rollDeg ) ) 
 
     if "stop" == motion :
         car.stop()  

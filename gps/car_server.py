@@ -294,7 +294,7 @@ class Car( Robot ) :
         '''
         
         sleep_sec = 0.095  
-        idx = 0 
+        idx = 0
 
         start = time.time()
         while req_no is self.req_no :
@@ -302,33 +302,46 @@ class Car( Robot ) :
             elapsed = now - start 
 
             pitch = self.pitchDeg
-            roll = self.rollDeg
+            roll = self.rollDeg 
 
-            speed  = 0.3
+            leds = [ ]
 
-            if 32 >= pitch :
-                speed = pitch/90.0
+            speed = pitch/90.0
+            curve_left = (360 - roll)/180.0
+            curve_right  = roll/180.0
+
+            if 32 <= pitch <= 180 : 
                 super().backward( speed )
 
-                print( "[%03d] move back elapsed = %2.4f  speed = %2.4f" % ( idx, elapsed, speed ) )  
+                print( "[%03d] drive back elapsed = %2.4f  speed = %2.4f" % ( idx, elapsed, speed ) )  
 
-                self.blink_led( self.bw_led )
-            elif 180 < roll :
-                speed = pitch/90.0
-                curve_left = (360 - roll)/180.0
+                leds.append( self.bw_led )
+            elif 180 < roll : 
+               
                 super().forward(speed, curve_left = curve_left)
 
-                print( "[%03d] move left elapsed = %2.4f  speed = %2.4f, curve_left = %2.4f" % ( idx, elapsed, speed, curve_left ) )  
+                print( "[%03d] drive left elapsed = %2.4f  speed = %2.4f, curve_left = %2.4f" % ( idx, elapsed, speed, curve_left ) )  
                 
-                self.blink_led( self.lft_led )
-            elif 180 > roll :
-                speed = pitch/90.0
-                curve_right  = roll/180.0
+                leds.append( self.lft_led )
+            elif 180 > roll : 
+                
                 super().forward(speed, curve_right = curve_right)
 
-                print( "[%03d] move right elapsed = %2.4f  speed = %2.4f, curve_right = %2.4f" % ( idx, elapsed, speed, curve_right ) )  
+                print( "[%03d] drive right elapsed = %2.4f  speed = %2.4f, curve_right = %2.4f" % ( idx, elapsed, speed, curve_right ) )  
 
-                self.blink_led( self.rht_led )
+                leds.append( self.rht_led )
+            else :
+                pass
+            pass
+
+            self.turn_off_all()
+
+            for led in leds : 
+                if idx%2 :
+                    led.on()
+                else :
+                    led.off()
+                pass
             pass
 
             sleep( sleep_sec ) 

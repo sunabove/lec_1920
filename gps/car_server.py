@@ -103,11 +103,16 @@ pass
 class State :
     FORWARD = "FORWARD"
     BACKWARD = "BACKEARD"
-    STOP = "STOP"
+    
     LEFT = "LEFT"
     RIGHT = "RIGHT" 
+    
+    STOP = "STOP"
     REVERSE = "REVERSE"
+    
     DRIVE = "DRIVE"
+
+    AUTOPILOT = "AUTOPILOT"
 pass
     
 from gpiozero import Robot, LED
@@ -713,7 +718,12 @@ def car_drive_json():
 
     print( "car_move motion = %s, pitch = %3.2f, roll = %3.2f" % (motion, pitchDeg, rollDeg ) ) 
 
-    if "stop" == motion :
+    if "autopilot" == motion :
+        lat = float( request.args.get('lat').lower() ) 
+        lon = float( request.args.get('long').lower() ) 
+
+        print( "car_move motion = %s, lat = %3.2f, long = %3.2f" % (motion, lat, lon ) ) 
+    elif "stop" == motion :
         car.stop()  
     elif "left" == motion :
         car.left()  

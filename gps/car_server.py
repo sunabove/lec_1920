@@ -286,8 +286,9 @@ class Car( Robot ) :
         prev = time.time()
 
         back_angle = 32.0
+        curve_angle = 90.0
 
-        while req_no is self.req_no :
+        while self.state is State.DRIVE and req_no is self.req_no :
             now = time.time()
             elapsed = now - prev 
 
@@ -298,16 +299,14 @@ class Car( Robot ) :
 
             speed = pitch/90.0
             
-            print( "[%03d] elapsed = %2.4f  pitch = %2.4f  roll = %2.4f " % ( idx, elapsed, pitch, roll ) )  
-
-            
+            print( "[%03d] elapsed = %2.4f  pitch = %2.4f  roll = %2.4f " % ( idx, elapsed, pitch, roll ) )   
 
             if idx :
                 pass
             elif 0 <= pitch <= back_angle : # 후진
                 leds.append( self.bw_led ) 
 
-                speed = 0.2 + (back_angle - pitch + 0.0)/back_angle
+                speed = 0.4 + (back_angle - pitch + 0.0)/back_angle
 
                 if 1 < speed :
                     speed = 1
@@ -316,7 +315,7 @@ class Car( Robot ) :
                 pass
 
                 if 10 <= roll <= 180 : 
-                    curve_right = roll/45.0
+                    curve_right = roll/curve_angle
                     if 1 > curve_right :
                         curve_right = 1.0
                     pass
@@ -326,7 +325,7 @@ class Car( Robot ) :
 
                     leds.append( self.lft_led )
                 elif 180 <= roll <= 350 : 
-                    curve_left = (360 - roll)/45.0 
+                    curve_left = (360 - roll)/curve_angle
 
                     if 1 > curve_left :
                         curve_left = 1.0
@@ -344,7 +343,7 @@ class Car( Robot ) :
                 leds.append( self.fw_led )
 
                 if 10 <= roll <= 180 : 
-                    curve_right = roll/45.0
+                    curve_right = roll/curve_angle
                     if 1 > curve_right :
                         curve_right = 1.0
                     pass
@@ -354,7 +353,7 @@ class Car( Robot ) :
 
                     leds.append( self.lft_led )
                 elif 180 <= roll <= 350 : 
-                    curve_left = (360 - roll)/45.0 
+                    curve_left = (360 - roll)/curve_angle
 
                     if 1 > curve_left :
                         curve_left = 1.0
@@ -716,6 +715,10 @@ def car_drive_json():
 
     if "stop" == motion :
         car.stop()  
+    elif "left" == motion :
+        car.left()  
+    elif "right" == motion :
+        car.right()  
     else:
         car.drive( pitchDeg, rollDeg ) 
     pass

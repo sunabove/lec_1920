@@ -350,7 +350,7 @@ class Car( Robot ) :
             self.turn_off_all()
 
             for led in leds : 
-                if idx%2 :
+                if not idx%2 :
                     led.on()
                 else :
                     led.off()

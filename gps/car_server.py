@@ -652,8 +652,8 @@ def car_json():
         )
 pass
 
-@app.route('/car_move.json') 
-def car_move_json():
+@app.route('/car_drive.json') 
+def car_drive_json():
     global ads
     car = ads.car
     ads.req_no += 1

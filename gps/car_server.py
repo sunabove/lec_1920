@@ -278,28 +278,16 @@ class Car( Robot ) :
     # -- move_forward_thread  
 
     # 이동 스레드
-    def drive_thread(self, req_no ) : 
-        '''
-            if (15 <= roll) {
-                motion = Motion.RIGHT ;
-            } else if ( -15 >= roll) {
-                motion = Motion.LEFT ;
-            } else if ( 45 <= pitch) {
-                motion = Motion.FORWARD ;
-            } else if ( 32 >= pitch) {
-                motion = Motion.BACKWARD ;
-            } else {
-                motion = Motion.STOP ;
-            }
-        '''
+    def drive_thread(self, req_no ) :  
         
-        sleep_sec = 0.095  
+        sleep_sec = 0.3
         idx = 0
 
-        start = time.time()
+        prev = time.time()
+
         while req_no is self.req_no :
             now = time.time()
-            elapsed = now - start 
+            elapsed = now - prev 
 
             pitch = self.pitchDeg
             roll = self.rollDeg 
@@ -308,9 +296,11 @@ class Car( Robot ) :
 
             speed = pitch/90.0
             
-            print( "[%03d] pitch = %2.4f  roll = %2.4f " % ( idx, pitch, roll ) )  
+            print( "[%03d] elapsed = %2.4f  pitch = %2.4f  roll = %2.4f " % ( idx, elapsed, pitch, roll ) )  
 
-            if 0 <= pitch <= 180 : 
+            if idx :
+                pass
+            elif 0 <= pitch <= 180 : 
                 leds.append( self.bw_led ) 
 
                 if 10 <= roll <= 180 : 
@@ -354,6 +344,9 @@ class Car( Robot ) :
                 pass
             pass
 
+            value = self.value 
+            print( "[%03d] drive elapsed = %2.4f  motor speed  left = %2.4f  right = %2.4f" % ( idx, elapsed, value[0], value[1] ) )
+
             self.turn_off_all()
 
             for led in leds : 
@@ -364,6 +357,8 @@ class Car( Robot ) :
                 pass
             pass
 
+            prev = now
+            
             sleep( sleep_sec ) 
 
             idx += 1
@@ -385,10 +380,6 @@ class Car( Robot ) :
         self.state = State.DRIVE
         self.pitchDeg = pitchDeg 
         self.rollDeg = rollDeg 
-
-        super().forward( 0.3 )
-        self.turn_off_all()
-        self.fw_led.on() 
 
         self.proc_common()
     pass

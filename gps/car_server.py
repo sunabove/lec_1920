@@ -838,10 +838,7 @@ def car_drive_json():
     ads.req_no += 1
     motion = request.args.get('motion').lower()
 
-    pitchDeg = float( request.args.get('pitchDeg').lower() ) % 360
-    rollDeg = float( request.args.get('rollDeg').lower() ) % 360
-
-    print( "car_move motion = %s, pitch = %3.2f, roll = %3.2f" % (motion, pitchDeg, rollDeg ) ) 
+    print( "car_move motion = %s" % (motion ) ) 
 
     if "autopilot" == motion :
         lat = float( request.args.get('lat') ) 
@@ -855,9 +852,11 @@ def car_drive_json():
     elif "left" == motion :
         car.left()  
     elif "right" == motion :
-        car.right()  
-    else:
-        car.drive( pitchDeg, rollDeg ) 
+        car.right()   
+    elif "forward" == motion :
+        car.forward()   
+    elif "backward" == motion :
+        car.backward()   
     pass
 
     return jsonify(

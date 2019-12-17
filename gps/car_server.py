@@ -37,6 +37,7 @@ logging.getLogger().setLevel(logging.DEBUG)
 import serial
 import pynmea2
 import geopy 
+import geopy.distance
 
 class Gps : 
     def __init__(self):
@@ -87,6 +88,7 @@ class Gps :
 
         return compass_bearing
     pass
+    # -- calculate_compass_bearing
 
     def get_heading( self ) :
         msg_curr = self.msg_curr 
@@ -108,7 +110,7 @@ class Gps :
             latLng = ( msg.latitude, msg.longitude )
             dist = geopy.distance.vincenty( latLngCurr, latLng ).meters
 
-            if 0.01 < dist : 
+            if 0.01 < dist or 0 is idx : 
                 compass_bearing = self.calculate_compass_bearing( latLngCurr, latLng )
 
                 return compass_bearing
@@ -381,7 +383,7 @@ class Car( Robot ) :
         back_angle = 32.0
         curve_angle = 90.0
 
-        while self.state is State.DRIVE and req_no is self.req_no :
+        while req_no is self.req_no and self.state is State.DRIVE :
             now = time.time()
             elapsed = now - prev 
 
@@ -677,7 +679,13 @@ class Camera(object):
             txt = "No GPS"
         else :  
             heading = gps.get_heading()
-            format = "[%06d] GPS %s %s  %s %s  %s%s H %d" 
+            if not heading : 
+                heading = "None"
+            else :
+                heading = "%3.2f" % self.pretty_angle( heading )
+            pass
+
+            format = "[%06d] GPS %s %s  %s %s  %s%s H %s" 
 
             txt = format % ( msg.gps_parse_cnt, msg.lat, msg.lat_dir, msg.lon, msg.lon_dir, msg.altitude, msg.altitude_units, heading )
         pass

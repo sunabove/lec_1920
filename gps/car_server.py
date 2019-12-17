@@ -534,9 +534,13 @@ class Car( Robot ) :
                 else :
                     if 0 < heading_diff : 
                         curve_right = 0.7 
+                        leds.append( self.fw_led )
+                        leds.append( self.rht_led )
                         super().forward( speed, curve_right = curve_right )
                     else :
                         curve_left  = 0.7 
+                        leds.append( self.fw_led )
+                        leds.append( self.lft_led )
                         super().forward( speed, curve_left  = curve_left  )
                     pass
 
@@ -546,6 +550,8 @@ class Car( Robot ) :
                 heading_diff_prev = None
                 curve_right = 0
                 curve_left  = 0 
+
+                super().forward( speed )
             pass
 
             value = self.value 

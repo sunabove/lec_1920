@@ -17,7 +17,7 @@ def check_pkg( pkg ) :
 	pass
 pass
 
-for pkg in [ "flask", "flask_socketio", "OpenSSL, pyopenssl", "serial, pyserial", "pynmea2" ] :
+for pkg in [ "flask", "geopy", "flask_socketio", "OpenSSL, pyopenssl", "serial, pyserial", "pynmea2" ] :
 	check_pkg( pkg )
 pass
 
@@ -36,6 +36,7 @@ logging.getLogger().setLevel(logging.DEBUG)
 
 import serial
 import pynmea2
+import geopy 
 
 class Gps : 
     def __init__(self):
@@ -43,7 +44,78 @@ class Gps :
         self.gps_cnt = 0 
         self.gps_parse_cnt = 0 
         self.msg = None
-        self.curr_msg = None  
+        self.msg_list = []
+        self.msg_curr = None  
+        self.msg_prev = None 
+    pass
+
+    def calculate_compass_bearing(self, point_a, point_b):
+        """
+        Calculates the bearing between two points.
+        The formulae used is the following:
+            θ = atan2(sin(Δlong).cos(lat2),
+                    cos(lat1).sin(lat2) − sin(lat1).cos(lat2).cos(Δlong))
+        :Parameters:
+        - `pointA: The tuple representing the latitude/longitude for the
+            first point. Latitude and longitude must be in decimal degrees
+        - `pointB: The tuple representing the latitude/longitude for the
+            second point. Latitude and longitude must be in decimal degrees
+        :Returns:
+        The bearing in degrees
+        :Returns Type:
+        float
+        """
+        if (type(point_a) != tuple) or (type(point_b) != tuple):
+            raise TypeError("Only tuples are supported as arguments")
+
+        lat1 = math.radians(point_a[0])
+        lat2 = math.radians(point_b[0])
+
+        diffLong = math.radians(point_b[1] - point_a[1])
+
+        x = math.sin(diffLong) * math.cos(lat2)
+        y = math.cos(lat1) * math.sin(lat2) - (math.sin(lat1)
+                * math.cos(lat2) * math.cos(diffLong))
+
+        initial_bearing = math.atan2(x, y)
+
+        # Now we have the initial bearing but math.atan2 return values
+        # from -180° to + 180° which is not what we want for a compass bearing
+        # The solution is to normalize the initial bearing as shown below
+        initial_bearing = math.degrees(initial_bearing)
+        compass_bearing = (initial_bearing + 360) % 360 
+
+        return compass_bearing
+    pass
+
+    def get_heading( self ) :
+        msg_curr = self.msg_curr 
+        msg_prev = self.msg_prev
+        
+
+        if not msg_curr or not msg_prev :
+            return -1 
+        pass 
+
+        msg_list = self.msg_list
+
+        idx = len( msg_list ) - 2 
+
+        latLngCurr = ( msg_curr.latitude, msg_curr.longitude )
+
+        while -1 < idx :
+            msg = msg_list[ idx ] 
+            latLng = ( msg.latitude, msg.longitude )
+            dist = geopy.distance.vincenty( latLngCurr, latLng ).meters
+
+            if 0.01 < dist : 
+                compass_bearing = self.calculate_compass_bearing( latLngCurr, latLng )
+
+                return compass_bearing
+            pass
+
+            idx -= 1
+        pass 
     pass
 
     def parseGPS(self, str):
@@ -53,20 +125,36 @@ class Gps :
             if msg.lat :
                 self.gps_parse_cnt += 1
 
-                self.curr_msg = msg
-            pass
+                self.msg_prev = self.msg_curr
 
-            gps_parse_cnt = self.gps_parse_cnt 
+                if not self.msg_prev :
+                    self.msg_prev = msg 
+                pass
+
+                self.msg_curr = msg
+                
+                self.msg = msg  
+
+                msg_list = self.msg_list 
+                msg_list.append( msg )
+
+                while 1_000 < len( msg_list ) :
+                    msg_list.pop( 0 )
+                pass
+
+                gps_parse_cnt = self.gps_parse_cnt 
             
-            msg.gps_parse_cnt = gps_parse_cnt
+                msg.gps_parse_cnt = gps_parse_cnt 
 
-            self.msg = msg 
-
-            if self.dbg : 
-                print( "[%04d] %s" % ( gps_parse_cnt, str ) , end ="" )
-                format = "[%04d] Timestamp: %s -- Lat: %s %s -- Lon: %s %s -- Altitude: %s %s -- Satellites: %s" 
-                print( format % ( gps_parse_cnt, msg.timestamp, msg.lat,msg.lat_dir, msg.lon,msg.lon_dir,msg.altitude,msg.altitude_units,msg.num_sats) )
+                if self.dbg : 
+                    print( "[%04d] %s" % ( gps_parse_cnt, str ) , end ="" )
+                    format = "[%04d] Timestamp: %s -- Lat: %s %s -- Lon: %s %s -- Altitude: %s %s -- Satellites: %s" 
+                    print( format % ( gps_parse_cnt, msg.timestamp, msg.lat,msg.lat_dir, msg.lon,msg.lon_dir,msg.altitude,msg.altitude_units,msg.num_sats) )
+                pass
+            else :
+                print( "### Invalid gps data....")
             pass
+            
         pass
     pass 
 
@@ -588,9 +676,10 @@ class Camera(object):
         if not msg :
             txt = "No GPS"
         else :  
-            format = "[%06d] GPS %s %s  %s %s  %s%s H" 
+            heading = gps.get_heading()
+            format = "[%06d] GPS %s %s  %s %s  %s%s H %d" 
 
-            txt = format % ( msg.gps_parse_cnt, msg.lat, msg.lat_dir, msg.lon, msg.lon_dir, msg.altitude, msg.altitude_units )
+            txt = format % ( msg.gps_parse_cnt, msg.lat, msg.lat_dir, msg.lon, msg.lon_dir, msg.altitude, msg.altitude_units, heading )
         pass
 
         txt += "   " + car.state
@@ -803,19 +892,19 @@ def send_me_curr_pos_json():
         pass
     pass
 
-    curr_msg = ads.gps.curr_msg 
+    msg_curr = ads.gps.msg_curr 
 
-    if not curr_msg :
+    if not msg_curr :
         return { "valid" : 0 }, 200
     pass
 
     json = {
         "valid" : 1, 
-        "gps_parse_cnt" : "%s" % curr_msg.gps_parse_cnt, 
-        "timestamp" : "%s" % curr_msg.timestamp,
-        "latitude" : "%s" % curr_msg.latitude,
-        "longitude" : "%s" % curr_msg.longitude, 
-        "altitude" : "%s" %  curr_msg.altitude,
+        "gps_parse_cnt" : "%s" % msg_curr.gps_parse_cnt, 
+        "timestamp" : "%s" % msg_curr.timestamp,
+        "latitude" : "%s" % msg_curr.latitude,
+        "longitude" : "%s" % msg_curr.longitude, 
+        "altitude" : "%s" %  msg_curr.altitude,
         "heading" : "%s" % yaw_deg,
     }
 

@@ -490,7 +490,7 @@ class Car( Robot ) :
 
     def auto_pilot( self, lat, lng ) :
         self.state = State.AUTOPILOT
-        
+
         target = self.auto_pilot_thread 
         req_no = self.req_no
 
@@ -511,7 +511,7 @@ class Car( Robot ) :
         heading_diff_prev = None
         curve_right = 0
         curve_left  = 0 
-
+        
         while req_no is self.req_no and self.state is State.AUTOPILOT :
             now = time.time()
             elapsed = now - prev  

@@ -90,7 +90,7 @@ class Gps :
     pass
     # -- calculate_compass_bearing
 
-    def get_heading( self ) :
+    def get_heading_current( self ) :
         msg_curr = self.msg_curr 
         msg_prev = self.msg_prev
         
@@ -497,16 +497,56 @@ class Car( Robot ) :
 
     # 이동 스레드
     def auto_pilot_thread(self, req_no, lat, lng ) :  
-        sleep_sec = 0.01
+        sleep_sec = 0.1
         idx = 0
 
         prev = time.time() 
 
-        while self.state is State.DRIVE and req_no is self.req_no :
+        gps = ads.gps
+
+        latLng_goal = ( lat, lng )
+
+        heading_diff_prev = None
+        curve_right = 0
+        curve_left  = 0 
+
+        while req_no is self.req_no  and self.state is State.AUTOPILOT :
             now = time.time()
             elapsed = now - prev  
 
+            speed = 0.7
+
             leds = [ ] 
+
+            msg = gps.msg_curr
+
+            latLng_curr = ( msg.latitude, msg.longitude )
+
+            heading_goal = ads.gps.calculate_compass_bearing( latLng_curr, latLng_goal )
+            heading_curr = ads.gps.get_heading_current()
+
+            heading_diff = heading_goal - heading_curr
+            heading_diff = heading_diff % 360 
+
+            if 5 < abs( heading_diff ) : 
+                if heading_diff_prev is None :
+                    heading_diff_prev = heading_diff
+                else :
+                    if 0 < heading_diff : 
+                        curve_right = 0.7 
+                        super().forward( speed, curve_right = curve_right )
+                    else :
+                        curve_left  = 0.7 
+                        super().forward( speed, curve_left  = curve_left  )
+                    pass
+
+                    heading_diff_prev = heading_diff
+                pass
+            else :
+                heading_diff_prev = None
+                curve_right = 0
+                curve_left  = 0 
+            pass
 
             value = self.value 
             print( "[%03d] autopilot elapsed = %2.4f  motor speed  left = %2.4f  right = %2.4f" % ( idx, elapsed, value[0], value[1] ) )
@@ -678,7 +718,7 @@ class Camera(object):
         if not msg :
             txt = "No GPS"
         else :  
-            heading = gps.get_heading()
+            heading = gps.get_heading_current()
             if not heading : 
                 heading = "None"
             else :

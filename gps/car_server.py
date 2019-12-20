@@ -618,7 +618,7 @@ class Car( Robot ) :
     pass
 
     # 후진
-    def backward(self, speed=1):
+    def backward(self, speed=1, curve=0):
         self.state = State.BACKWARD
 
         super().backward(speed)
@@ -884,14 +884,15 @@ def car_json():
     car = ads.car
     ads.req_no += 1
     motion = request.args.get('motion').lower()
-    curve = request.args.get('curve')
+
+    curve = request.args.get('curve') 
     if curve :
         curve = float( curve )
     else :
         curve = 0 
     pass
 
-    print( "motion = %s" % motion )
+    print( "## motion = %s, curve = %.1f" % (motion, curve) )
 
     if "forward" == motion :
         car.forward( curve = curve ) 

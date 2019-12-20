@@ -108,7 +108,7 @@ class Gps :
         while -1 < idx :
             msg = msg_list[ idx ] 
             latLng = ( msg.latitude, msg.longitude )
-            dist = geopy.distance.vincenty( latLngCurr, latLng ).meters
+            dist = geopy.distance.geodesic( latLngCurr, latLng ).meters
 
             if 0.01 < dist or 0 is idx : 
                 compass_bearing = self.calculate_compass_bearing( latLngCurr, latLng )
@@ -599,14 +599,22 @@ class Car( Robot ) :
     pass
 
     # 전진
-    def forward(self, speed=1):
+    def forward(self, speed=1, curve=0):
         self.state = State.FORWARD
 
-        super().forward(speed)
         self.turn_off_all()
         self.fw_led.on() 
 
-        self.proc_common()
+        if not curve : 
+            super().forward(speed) 
+
+            self.proc_common()
+        elif curve > 0 :
+            super().forward( speed, curve_right = curve ) 
+        elif curve < 0 : 
+            super().forward( speed, curve_left = - curve )
+        pass 
+        
     pass
 
     # 후진
@@ -733,7 +741,7 @@ class Camera(object):
                 heading = "%3.2f" % self.pretty_angle( heading )
             pass
 
-            format = "[%06d] GPS %s %s  %s %s  %s%s H %s" 
+            format = "[%06d] GPS %s %s  %s %s  %s%s  H %s" 
 
             txt = format % ( msg.gps_parse_cnt, msg.lat, msg.lat_dir, msg.lon, msg.lon_dir, msg.altitude, msg.altitude_units, heading )
         pass
@@ -876,13 +884,19 @@ def car_json():
     car = ads.car
     ads.req_no += 1
     motion = request.args.get('motion').lower()
+    curve = request.args.get('curve')
+    if curve :
+        curve = float( curve )
+    else :
+        curve = 0 
+    pass
 
     print( "motion = %s" % motion )
 
     if "forward" == motion :
-        car.forward() 
+        car.forward( curve = curve ) 
     elif "backward" == motion :
-        car.backward() 
+        car.backward( curve = curve ) 
     elif "left" == motion :
         car.left() 
     elif "right" == motion  :

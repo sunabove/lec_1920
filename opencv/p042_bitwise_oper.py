@@ -4,7 +4,7 @@ import numpy as np
 
 # Load two images
 img1 = cv2.imread('messi5.jpg')
-img2 = cv2.imread('opencv_logo.png')
+img2 = cv2.imread('opencv-logo-white.png')
 # I want to put logo on top-left corner, So I create a ROI
 rows,cols,channels = img2.shape
 roi = img1[ 0:rows, 0:cols ]

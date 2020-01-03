@@ -1,7 +1,11 @@
+# coding: utf-8
+
 # This program will let you test your ESC and brushless motor.
 # Make sure your battery is not connected if you are going to calibrate it at first.
-# Since you are testing your motor, I hope you don't have your propeller attached to it otherwise you are in trouble my friend...?
-# This program is made by AGT @instructable.com. DO NOT REPUBLISH THIS PROGRAM... actually the program itself is harmful                                             pssst Its not, its safe.
+# Since you are testing your motor, 
+# I hope you don't have your propeller attached to it otherwise you are in trouble my friend...?
+# This program is made by AGT @instructable.com.
+# DO NOT REPUBLISH THIS PROGRAM... actually the program itself is harmful pssst Its not, its safe.
 
 import os 
 import time 

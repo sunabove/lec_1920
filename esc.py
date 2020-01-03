@@ -1,32 +1,19 @@
 # coding: utf-8
-#
-# Sends the servo pulses needed to initialise some ESCs
-#
-# Requires the pigpio daemon to be running
-#
-# sudo apt install pigpiod
-# sudo pigpiod
-
 import time
+import RPi.GPIO as GPIO
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BOARD)
 
-import pigpio
+GPIO.setup(11, GPIO.OUT)
 
-SERVO = 4
+t1 = GPIO.PWM(11, 60)
 
-pi = pigpio.pi() # Connect to local Pi.
+t1.start(0)
 
-pi.set_servo_pulsewidth(SERVO, 1000) # Minimum throttle.
+#t1.ChangeDutyCycle(7.5)
+time.sleep(3)
 
-time.sleep(5)
+t1.stop()
 
-pi.set_servo_pulsewidth(SERVO, 2000) # Maximum throttle.
-
-time.sleep(5)
-
-pi.set_servo_pulsewidth(SERVO, 1100) # Slightly open throttle.
-
-time.sleep(5)
-
-pi.set_servo_pulsewidth(SERVO, 0) # Stop servo pulses.
-
-pi.stop() # Disconnect from local Raspberry Pi.
+GPIO.cleanup()
+quit()

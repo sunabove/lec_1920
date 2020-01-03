@@ -3,11 +3,12 @@
 # Since you are testing your motor, I hope you don't have your propeller attached to it otherwise you are in trouble my friend...?
 # This program is made by AGT @instructable.com. DO NOT REPUBLISH THIS PROGRAM... actually the program itself is harmful                                             pssst Its not, its safe.
 
-import os     #importing os library so as to communicate with the system
-import time   #importing time library to make Rpi wait because its too impatient 
-os.system ("sudo pigpiod") #Launching GPIO library
-time.sleep(1) # As i said it is too impatient and so if this delay is removed you will get an error
-import pigpio #importing GPIO library
+import os 
+import time 
+#Launching GPIO library
+os.system ("sudo pigpiod") 
+time.sleep(1) 
+import pigpio  
 
 ESC=17  #Connect the ESC in this GPIO pin 
 

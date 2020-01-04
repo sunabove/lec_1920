@@ -53,7 +53,7 @@ actions = {
     curses.KEY_RIGHT: car.right,
 }
 
-def main(window):
+def car_control(window):
     next_key = None
     while 1:
         curses.halfdelay(1)
@@ -79,7 +79,7 @@ def main(window):
 pass
 
 if __name__ == "__main__":
-    curses.wrapper(main)
+    curses.wrapper(car_control)
 pass
 
 # end

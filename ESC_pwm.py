@@ -5,7 +5,7 @@ from time import sleep
 
 esc = PWMLED(17)
 
-value_min = 0.150
+value_min = 0.150 
 value_max = 0.183
 value_gap = value_max - value_min
 

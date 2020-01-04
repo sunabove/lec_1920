@@ -5,9 +5,15 @@ from time import sleep
 
 pwmESC = PWMLED(17)
 
-for x in range( 10, 17 ) :
-   pwmESC.value = x*0.01
-   print( "pwm value = %5.2f" % pwmESC.value )
+value_min = 0.148
+value_max = 0.151
+value_gap = value_max - value_min
+
+steps = 20
+for x in range( steps ) :
+   pwmESC.value = value_min + value_gap*x/(steps + 0.0)
+   print( "pwm value = %5.4f" % pwmESC.value )
    sleep(0.7) 
+pass
 
 pwmESC.value = 0

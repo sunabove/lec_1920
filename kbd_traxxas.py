@@ -5,17 +5,19 @@ from gpiozero import PWMLED, Servo
 class Car :
     pass
 
+    # 초기화 
     def __init__( self ) :
         self.servo = Servo(4) 
         self.esc = PWMLED(17)
 
         self.pwm_min = 0.148
         self.pwm_max = 0.151
-        
+
         self.esc.value = 0.0
         self.servo.value = 0.0
     pass
 
+    # 전진
     def forward( self ) :
         esc = self.esc
 
@@ -30,6 +32,7 @@ class Car :
         esc.value = value
     pass
 
+    # 후진 
     def backward( self ) :
         esc = self.esc
 
@@ -44,6 +47,7 @@ class Car :
         esc.value = value
     pass
 
+    # 좌회전 
     def left( self ) :
         servo = self.servo
         value = servo.value + 0.1
@@ -57,6 +61,7 @@ class Car :
         servo.value = value
     pass
 
+    # 우회전 
     def right( self ) :
         servo = self.servo
         value = servo.value - 0.1
@@ -70,6 +75,7 @@ class Car :
         servo.value = value
     pass
 
+    # 정지 
     def stop(self):
         self.servo.value = 0 
         self.esc.value = 0

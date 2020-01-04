@@ -11,6 +11,9 @@ class Car :
 
         self.pwm_min = 0.148
         self.pwm_max = 0.151
+        
+        self.esc.value = 0.0
+        self.servo.value = 0.0
     pass
 
     def forward( self ) :
@@ -31,7 +34,7 @@ class Car :
         esc = self.esc
 
         value = esc.value - 0.01
-        
+
         if 0 > value :
             value = 0 
         elif self.pwm_max < value :
@@ -43,12 +46,28 @@ class Car :
 
     def left( self ) :
         servo = self.servo
-        servo.value = servo.value + 0.1
+        value = servo.value + 0.1
+
+        if 1.0 < value :
+            value = 1.0
+        elif -1.0 > value :
+            value = -1.0
+        pass
+        
+        servo.value = value
     pass
 
     def right( self ) :
         servo = self.servo
-        servo.value = servo.value - 0.1
+        value = servo.value - 0.1
+
+        if 1.0 < value :
+            value = 1.0
+        elif -1.0 > value :
+            value = -1.0
+        pass
+        
+        servo.value = value
     pass
 
     def stop(self):

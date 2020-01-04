@@ -1,6 +1,5 @@
 # coding: utf-8
 import curses
-from gpiozero import Robot 
 from gpiozero import PWMLED, Servo
 
 class Car :
@@ -16,25 +15,40 @@ class Car :
 
     def forward( self ) :
         esc = self.esc
-        if self.pwm_min > esc.value : 
-            esc.value = self.pwm_min
-        else:
-            esc.value = esc.value + 0.01
+
+        value = esc.value + 0.01
+
+        if self.pwm_min > value :
+            value = self.pwm_min
+        elif self.pwm_max < value :
+            value = self.pwm_max
         pass
+
+        esc.value = value
     pass
 
     def backward( self ) :
+        esc = self.esc
+
+        value = esc.value - 0.01
+        
+        if 0 > value :
+            value = 0 
+        elif self.pwm_max < value :
+            value = self.pwm_max
         pass
+
+        esc.value = value
     pass
 
     def left( self ) :
         servo = self.servo
-        servo.value = servo.value - 0.1
+        servo.value = servo.value + 0.1
     pass
 
     def right( self ) :
         servo = self.servo
-        servo.value = servo.value + 0.1
+        servo.value = servo.value - 0.1
     pass
 
     def stop(self):

@@ -19,7 +19,7 @@ ESC=17  #Connect the ESC in this GPIO pin
 pi = pigpio.pi()
 pi.set_servo_pulsewidth(ESC, 0) 
 
-max_value = 2000 #change this if your ESC's max value is different or leave it be
+max_value = 1500 #change this if your ESC's max value is different or leave it be
 min_value = 700  #change this if your ESC's min value is different or leave it be
 print( "For first time launch, select calibrate" )
 print( "Type the exact word for the function you want" )
@@ -56,7 +56,7 @@ def calibrate():   #This is the auto calibration procedure of a normal ESC
             print( "Wierd eh! Special tone" )
             time.sleep(7)
             print( "Wait for it ...." )
-            time.sleep (5)
+            time.sleep(5)
             print( "Im working on it, DONT WORRY JUST WAIT....." )
             pi.set_servo_pulsewidth(ESC, 0)
             time.sleep(2)

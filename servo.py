@@ -4,7 +4,7 @@ from time import sleep
 
 servo = Servo(4)
 
-while True:
+for i in range( 1 ) :
    print( "servo min")
    servo.min()
    sleep(1)
@@ -18,3 +18,7 @@ while True:
    servo.value = 0.5
    sleep(1)
 pass
+
+print( "servo mid")
+servo.mid()
+sleep(1)

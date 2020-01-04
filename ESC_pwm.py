@@ -1,19 +1,29 @@
 # coding: utf-8
 
-from gpiozero import PWMLED
-from time import sleep
+import os 
+import time 
+#Launching GPIO library
+os.system ("sudo pigpiod") 
+time.sleep(1) 
+import pigpio  
 
-esc = PWMLED(17)
+esc_gpio = 17  #Connect the ESC in this GPIO pin 
 
-value_min = 0.146 
-value_max = 0.152
-value_gap = value_max - value_min
+pi = pigpio.pi()
+pi.set_servo_pulsewidth(esc_gpio, 0) 
 
-steps = 20
-for x in range( steps ) :
-   esc.value = value_min + value_gap*x/(steps + 0.0)
-   print( "pwm value = %5.4f" % esc.value )
-   sleep(0.7) 
-pass
+time.sleep(3) 
 
-esc.value = 0
+min_value = 1520 
+max_value = 1600   
+
+speed = min_value
+
+while speed < max_value :  
+   print( "speed = %d" % speed )
+   pi.set_servo_pulsewidth( esc_gpio, speed)
+   time.sleep( 1 )
+   speed += 10
+pass 
+
+pi.set_servo_pulsewidth(esc_gpio, 0) 

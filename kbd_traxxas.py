@@ -6,7 +6,7 @@ from gpiozero import PWMLED, Servo
 class Car :
     pass
 
-    def __init__( self )
+    def __init__( self ) :
         self.servo = Servo(4) 
         self.esc = PWMLED(17)
 
@@ -16,7 +16,7 @@ class Car :
 
     def forward( self ) :
         esc = self.esc
-        if self.pwm_min > esc.value
+        if self.pwm_min > esc.value : 
             esc.value = self.pwm_min
         else:
             esc.value = esc.value + 0.01
@@ -55,24 +55,25 @@ actions = {
 
 def main(window):
     next_key = None
-    while True:
+    while 1:
         curses.halfdelay(1)
         if next_key is None:
             key = window.getch()
         else:
             key = next_key
             next_key = None
+        pass
+
         if key != -1:
             # KEY PRESSED
-            curses.halfdelay(3)
+            curses.halfdelay(1)
             action = actions.get(key)
             if action is not None:
                 action()
             next_key = key
             while next_key == key:
                 next_key = window.getch()
-            # KEY RELEASED
-            car.stop()
+            pass
         pass
     pass
 pass

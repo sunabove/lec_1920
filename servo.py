@@ -2,9 +2,7 @@
 from gpiozero import Servo
 from time import sleep
 
-servo = Servo(4)
-
-
+servo = Servo(4) 
 
 for i in range( 0 ) :
    print( "servo min")
@@ -27,7 +25,7 @@ for i in range( -10, 10 ) :
    sleep(1)
 pass
 
-if 0 :
+if 1 :
    print( "servo mid")
    servo.mid()
    sleep(1)

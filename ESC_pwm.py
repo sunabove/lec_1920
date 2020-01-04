@@ -1,3 +1,5 @@
+# coding: utf-8
+
 from gpiozero import PWMLED
 from time import sleep
 

@@ -9,7 +9,7 @@ class Car :
         self.servo = Servo(4) 
         self.esc = PWMLED(17)
 
-        self.pwm_min = 0.148
+        self.pwm_min = 0.146
         self.pwm_max = 0.157
 
         self.esc.value = 0.0
@@ -20,7 +20,7 @@ class Car :
     def forward( self ) :
         esc = self.esc
 
-        value = esc.value + 0.001
+        value = esc.value + 0.0003
 
         if self.pwm_min > value :
             value = self.pwm_min

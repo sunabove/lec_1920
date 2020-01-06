@@ -3,7 +3,6 @@ import curses
 from gpiozero import PWMLED, Servo
 
 class Car :
-    pass
 
     # 초기화 
     def __init__( self ) :
@@ -90,6 +89,7 @@ actions = {
     curses.KEY_DOWN:  car.backward,
     curses.KEY_LEFT:  car.left,
     curses.KEY_RIGHT: car.right,
+    ' ' : car.stop,
 }
 
 def car_control(window):

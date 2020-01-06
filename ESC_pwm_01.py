@@ -7,9 +7,9 @@ from numpy import arange
 esc = PWMLED(17)
 
 esc.value = 0
-sleep( 0.7)
+sleep( 1 )
 
-for x in arange( 0.145, 0.155, 0.001 ):
+for x in arange( 0.145, 0.157, 0.001 ):
     esc.value = x
     print( "pwm value = %5.4f" % esc.value )
     sleep( 1 ) 

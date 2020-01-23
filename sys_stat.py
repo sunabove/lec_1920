@@ -17,7 +17,7 @@ def check_pkg( pkg ) :
 	pass
 pass
 
-for pkg in [ "gpiozero", "psutil", "netifaces" ] :
+for pkg in [ "RPi.GPIO", "gpiozero", "psutil", "netifaces" ] :
 	check_pkg( pkg )
 pass
 

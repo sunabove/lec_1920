@@ -17,19 +17,19 @@ print 'Start Script'
 Script.SendRC(3,1600,False)
 Script.SendRC(8,1000,True)
 print 'sent throttle down'
-MAV.doARM(True);
+MAV.doARM(True)
 print 'sent arm'
 Script.SendRC(8,2000,True)
 print 'sent throtle up'
 Script.ChangeMode("Guided")
 print 'sent guided'
-MAV.doCommand(MAVLink.MAV_CMD.TAKEOFF, 0, 0, 0, 0, 0, 0, 100);
+MAV.doCommand(MAVLink.MAV_CMD.TAKEOFF, 0, 0, 0, 0, 0, 0, 100)
 print 'sent takeoff'
 
-Script.SendRC(3,1900,True) # throttle
+Script.SendRC(3,1900,True) # throttle up
 
 Script.Sleep(2000)  
 
-Script.SendRC(3,1500,True) # throttle
+Script.SendRC(3,1500,True) # throttle down
 
 Script.Sleep(2000)  

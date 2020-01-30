@@ -15,31 +15,51 @@ import MAVLink
 idmavcmd = MAVLink.MAV_CMD.WAYPOINT
 id = int(idmavcmd)
 
-home = Locationwp().Set(-34.9805,117.8518,0, id)
+alt = 0 
+
+home = Locationwp().Set( 37.344628,	126.952841, alt, id)
+
 to = Locationwp()
 Locationwp.id.SetValue(to, int(MAVLink.MAV_CMD.TAKEOFF))
 Locationwp.p1.SetValue(to, 15)
-Locationwp.alt.SetValue(to, 50)
-wp1 = Locationwp().Set(-35,117.8,50, id)
-wp2 = Locationwp().Set(-35,117.89,50, id)
-wp3 = Locationwp().Set(-35,117.85,20, id)
+Locationwp.alt.SetValue(to, alt)
+
+points = []
+points.append( (37.34464360, 126.95298940) )
+points.append( (37.34470970, 126.95375250) )
+points.append( (37.34481310, 126.95407300) )
+points.append( (37.34544640, 126.95396970) )
+points.append( (37.34588460, 126.95388530) )
+points.append( (37.34634310, 126.95380080) )
+points.append( (37.34641340, 126.95369210) )
+points.append( (37.34641340, 126.95322010) )
+points.append( (37.34642410, 126.95311680) )
+points.append( (37.34656910, 126.95266220) )
+points.append( (37.34653600, 126.95250790) )
+points.append( (37.34647530, 126.95243950) )
+points.append( (37.34638570, 126.95242350) )
+points.append( (37.34478320, 126.95279490) )
+points.append( (37.34467980, 126.95282040) )
 
 print "set wp total"
-MAV.setWPTotal(5)
+MAV.setWPTotal( 2 + len( points ) )
+
 print "upload home - reset on arm"
-MAV.setWP(home,0,MAVLink.MAV_FRAME.GLOBAL_RELATIVE_ALT);
+idx = 0 
+MAV.setWP(home, idx,MAVLink.MAV_FRAME.GLOBAL_RELATIVE_ALT)
+idx += 1
 print "upload to"
-MAV.setWP(to,1,MAVLink.MAV_FRAME.GLOBAL_RELATIVE_ALT);
-print "upload wp1"
-MAV.setWP(wp1,2,MAVLink.MAV_FRAME.GLOBAL_RELATIVE_ALT);
-print "upload wp2"
-MAV.setWP(wp2,3,MAVLink.MAV_FRAME.GLOBAL_RELATIVE_ALT);
-print "upload wp3"
-MAV.setWP(wp3,4,MAVLink.MAV_FRAME.GLOBAL_RELATIVE_ALT);
+MAV.setWP(to, idx,MAVLink.MAV_FRAME.GLOBAL_RELATIVE_ALT)
+idx += 1
+
+for p in points : 
+    print "upload wp %d" % idx
+    wp = Locationwp().Set( p[0], p[1], alt, id) 
+    MAV.setWP(wp, idx, MAVLink.MAV_FRAME.GLOBAL_RELATIVE_ALT) 
+    idx += 1
+pass
+
 print "final ack"
-MAV.setWPACK();
+MAV.setWPACK()
 
 print "done"
-
-
-

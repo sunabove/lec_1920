@@ -10,7 +10,15 @@ import MissionPlanner
 clr.AddReference("MissionPlanner.Utilities") # includes the Utilities class
 from MissionPlanner.Utilities import Locationwp
 clr.AddReference("MAVLink") # includes the Utilities class
-import MAVLink
+import MAVLink 
+
+def speak( text ) :
+    MissionPlanner.MainV2.speechEnable = True
+    print text 
+    MissionPlanner.MainV2.speechEngine.SpeakAsync( text )
+
+    time.sleep( 2 )
+pass
 
 idmavcmd = MAVLink.MAV_CMD.WAYPOINT
 id = int(idmavcmd)
@@ -41,14 +49,13 @@ points.append( (37.34638570, 126.95242350) )
 points.append( (37.34478320, 126.95279490) )
 points.append( (37.34467980, 126.95282040) )
 
-print "set wp total"
+speak( "set wp total" )
 MAV.setWPTotal( 2 + len( points ) )
 
-print "upload home - reset on arm"
+speak( "uploading way points ..." )
 idx = 0 
 MAV.setWP(home, idx,MAVLink.MAV_FRAME.GLOBAL_RELATIVE_ALT)
-idx += 1
-print "upload to"
+idx += 1 
 MAV.setWP(to, idx,MAVLink.MAV_FRAME.GLOBAL_RELATIVE_ALT)
 idx += 1
 
@@ -59,7 +66,7 @@ for p in points :
     idx += 1
 pass
 
-print "final ack"
+speak( "final ack" )
 MAV.setWPACK()
 
-print "done"
+speak( "done uploading way points." )

@@ -12,24 +12,36 @@ from MissionPlanner.Utilities import Locationwp
 clr.AddReference("MAVLink") # includes the Utilities class
 import MAVLink
 
-print 'Start Script'
+def speak( text ) :
+    MissionPlanner.MainV2.speechEnable = True
+    print text 
+    MissionPlanner.MainV2.speechEngine.SpeakAsync( text )
+
+    time.sleep(2)
+pass
+
+speak( 'Start Script' )
 
 Script.SendRC(3,1600,False)
 Script.SendRC(8,1000,True)
-print 'sent throttle down'
+speak(  'sent throttle down' )
 MAV.doARM(True)
-print 'sent arm'
+speak(  'sent arm' )
 Script.SendRC(8,2000,True)
-print 'sent throtle up'
+speak(  'sent throttle up' )
 Script.ChangeMode("Guided")
-print 'sent guided'
+speak(  'sent guided' )
 MAV.doCommand(MAVLink.MAV_CMD.TAKEOFF, 0, 0, 0, 0, 0, 0, 100)
-print 'sent takeoff'
+speak(  'sent takeoff' )
 
+speak( "throttle up")
 Script.SendRC(3,1900,True) # throttle up
 
 Script.Sleep(2000)  
 
+speak( "throttle down")
 Script.SendRC(3,1500,True) # throttle down
 
 Script.Sleep(2000)  
+
+speak( "Testing Done." )

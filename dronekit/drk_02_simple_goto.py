@@ -9,24 +9,12 @@ import argparse
 parser = argparse.ArgumentParser(description='Commands vehicle using vehicle.simple_goto.')
 parser.add_argument('--connect',
                     help="Vehicle connection target string. If not specified, SITL automatically started and used.")
-args = parser.parse_args()
-
-connection_string = args.connect
-connection_string = 'COM6'
-
-sitl = None
-
-# Start SITL if no connection string specified
-if not connection_string:
-    import dronekit_sitl
-    sitl = dronekit_sitl.start_default()
-    connection_string = sitl.connection_string()
-pass
+args = parser.parse_args() 
 
 # Connect to the Vehicle
+connection_string = 'COM6'
 print('Connecting to vehicle on: %s' % connection_string)
 vehicle = connect(connection_string, baud=57600, wait_ready=True)
-
 
 def arm_and_takeoff(aTargetAltitude):
     """
@@ -65,7 +53,6 @@ def arm_and_takeoff(aTargetAltitude):
     pass
 pass
 
-
 alt = 0 
 
 arm_and_takeoff( alt )
@@ -94,11 +81,6 @@ vehicle.mode = VehicleMode("RTL")
 
 # Close vehicle object before exiting script
 print("Close vehicle object")
-vehicle.close()
-
-# Shut down simulator if it was started.
-if sitl:
-    sitl.stop()
-pass
+vehicle.close() 
 
 pass

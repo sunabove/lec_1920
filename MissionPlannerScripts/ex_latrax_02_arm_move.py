@@ -45,3 +45,4 @@ Script.SendRC(3,1500,True) # throttle down
 Script.Sleep(2000)  
 
 speak( "Testing Done." )
+

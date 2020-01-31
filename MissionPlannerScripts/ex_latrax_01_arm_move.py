@@ -17,7 +17,7 @@ def speak( text ) :
     print text 
     MissionPlanner.MainV2.speechEngine.SpeakAsync( text )
 
-    time.sleep(2)
+    time.sleep( len(text)/5 + 1 )
 pass
 
 speak( 'Start Script' )

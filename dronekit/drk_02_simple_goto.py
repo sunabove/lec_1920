@@ -1,10 +1,8 @@
 # coding: utf-8 
 
-
 from __future__ import print_function
 import time
 from dronekit import connect, VehicleMode, LocationGlobalRelative
-
 
 # Set up option parsing to get connection string
 import argparse

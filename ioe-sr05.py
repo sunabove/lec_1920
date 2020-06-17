@@ -14,67 +14,29 @@ pass
 signal.signal(signal.SIGINT, signal_handler)
 
 
-print ('-----------------------------------------------------------------sonar start') 
+print ('---------- sonar start ----------') 
 
-# Import Python GPIO library
-import RPi.GPIO as GPIO
-# Import time library
+#!/usr/bin/env python
+
+
 import time
-# Set GPIO pin numbering
-GPIO.setmode(GPIO.BCM)
+import serial
 
-# Name input and output pins
-TRIG = 4
-ECHO = 17
+ser = serial.Serial(   
+   port='/dev/ttyAMA0',
+   baudrate = 9600,
+   parity=serial.PARITY_NONE,
+   stopbits=serial.STOPBITS_ONE,
+   bytesize=serial.EIGHTBITS,
+   timeout=1
+) 
 
-# Print message to let the user know measurement is in progress
-print( "Distance Measurement in Progress" )
+idx = 0 
 
-# Set the two GPIO ports as either inputs or outputs
-GPIO.setup(TRIG,GPIO.OUT)
-GPIO.setup(ECHO,GPIO.IN)
-
-# Ensure that the Trigger pin is set low
-GPIO.output(TRIG,False)
- 
-# The sensor needs a moment
-print( "Waiting for the sensor to settle" )
-time.sleep(2)
-
-# Create trigger pulse and set to high
-GPIO.output(TRIG, True)
-
-# For 10us
-time.sleep(0.00001)
-
-# Set to low again
-GPIO.output(TRIG, False)
-
-# Record the last low timestamp for ECHO just before signal is received and the pin goes high
-pulse_start = time.time()
-
-while GPIO.input(ECHO)==0:
-   pulse_start = time.time()
-
-# Record the last high timestamp for ECHO
-pulse_end=time.time()
-
-while GPIO.input(ECHO)==1:
-   pulse_end=time.time()
-
-# Calculate the difference between the two recorded timestamps to get the duration of pulse and assign that value to pulse_duration
-pulse_duration=pulse_end - pulse_start
-
-# Calulate the distance
-distance=pulse_duration * 17150
-
-# Round the distance to 2 decimal places
-distance=round(distance, 2)
-
-# Print the distance
-print( "Distance:",distance,"cm" )
-
-# Clean the GPIO pins
-GPIO.cleanup()
+while ser.is_open :
+   c = ser.read( 1 )
+   print( c.hex() , end="" )
+   idx += 1
+pass
 
 print( "----------- Good bye! ---------")

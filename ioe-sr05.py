@@ -22,20 +22,25 @@ print ('---------- sonar start ----------')
 import time
 import serial
 
-ser = serial.Serial(   
+ser = serial.Serial(
+   #port='/dev/ttyS0',
    port='/dev/ttyAMA0',
-   baudrate = 9600,
-   parity=serial.PARITY_NONE,
-   stopbits=serial.STOPBITS_ONE,
-   bytesize=serial.EIGHTBITS,
-   timeout=1
+   # 75, 110, 300, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200 
+   baudrate = 1200, 
+   #parity=serial.PARITY_NONE,
+   #stopbits=serial.STOPBITS_ONE,
+   #bytesize=serial.EIGHTBITS,
+   #timeout=2
 ) 
 
 idx = 0 
 
 while ser.is_open :
+   print( "reading one byte ....")   
    c = ser.read( 1 )
-   print( c.hex() , end="" )
+   #c = 66
+   #print( c.hex() , end="" )
+   print( c  )
    idx += 1
 pass
 

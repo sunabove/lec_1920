@@ -1,0 +1,47 @@
+# coding: utf-8
+#!/usr/bin/env python 
+import time
+import sys
+import signal
+
+def signal_handler(signal, frame):
+   # ctrl + c -> exit program
+
+   print('You pressed Ctrl+C!')
+   sys.exit(0)
+pass
+
+signal.signal(signal.SIGINT, signal_handler)
+
+
+print ('---------- sonar start ----------') 
+
+#!/usr/bin/env python
+
+
+import time
+import serial
+
+ser = serial.Serial(
+   #port='/dev/ttyS0',
+   port='/dev/ttyAMA0',
+   # 75, 110, 300, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200 
+   baudrate = 38400, 
+   #parity=serial.PARITY_NONE,
+   #stopbits=serial.STOPBITS_ONE,
+   #bytesize=serial.EIGHTBITS,
+   #timeout=2
+) 
+
+idx = 0 
+
+while ser.is_open :
+   print( "reading one byte ....")   
+   c = ser.read( 1 )
+   #c = 66
+   #print( c.hex() , end="" )
+   print( c  )
+   idx += 1
+pass
+
+print( "----------- Good bye! ---------")

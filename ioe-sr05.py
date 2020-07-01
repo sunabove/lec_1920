@@ -8,6 +8,9 @@ def signal_handler(signal, frame):
    # ctrl + c -> exit program
 
    print('You pressed Ctrl+C!')
+
+   gpio.cleanup()
+
    sys.exit(0)
 pass
 
@@ -16,32 +19,22 @@ signal.signal(signal.SIGINT, signal_handler)
 
 print ('---------- sonar start ----------') 
 
-#!/usr/bin/env python
+# coding: utf-8
+from time import sleep
+import RPi.GPIO as gpio
+# Use "GPIO" pin numbering
+gpio.setmode(gpio.BCM)
+# Set LED pin as output
+pin_no = 4
+gpio.setup(pin_no, gpio.IN, pull_up_down=gpio.PUD_UP) 
+sleep(1)
 
-
-import time
-import serial
-
-ser = serial.Serial(
-   #port='/dev/ttyS0',
-   port='/dev/ttyAMA0',
-   # 75, 110, 300, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200 
-   baudrate = 1200, 
-   #parity=serial.PARITY_NONE,
-   #stopbits=serial.STOPBITS_ONE,
-   #bytesize=serial.EIGHTBITS,
-   #timeout=2
-) 
-
-idx = 0 
-
-while ser.is_open :
-   print( "reading one byte ....")   
-   c = ser.read( 1 )
-   #c = 66
-   #print( c.hex() , end="" )
-   print( c  )
-   idx += 1
+while 1 : 
+   v = gpio.input( pin_no )
+   print( v , end="" )
+   #sleep( 0.018/10 )
 pass
+
+gpio.cleanup()
 
 print( "----------- Good bye! ---------")

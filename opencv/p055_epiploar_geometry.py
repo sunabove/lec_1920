@@ -5,19 +5,22 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
-print( "Pwd 1: %s" % os.getcwd())
-# change working dir to current file
-os.chdir(os.path.dirname(__file__))
-print( "Pwd 2: %s" % os.getcwd())
+if 0 : 
+    print( "Pwd 1: %s" % os.getcwd())
+    # change working dir to current file
+    os.chdir(os.path.dirname(__file__))
+    print( "Pwd 2: %s" % os.getcwd())
+pass
 
 '''
 So first we need to find as many possible matches between two images to find the fundamental matrix. For this, we use SIFT descriptors with FLANN based matcher and ratio test.
 '''
 
 img1 = cv2.imread('./data/left.jpg',0)  #queryimage # left image
-img2 = cv2.imread('./dat/right.jpg',0) #trainimage # right image
+img2 = cv2.imread('./data/right.jpg',0) #trainimage # right image
 
-sift = cv2.SIFT()
+#sift = cv2.xfeatures2d.SIFT_create()
+sift = cv2.SIFT_create()
 
 # find the keypoints and descriptors with SIFT
 kp1, des1 = sift.detectAndCompute(img1,None)

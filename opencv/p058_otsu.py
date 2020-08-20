@@ -1,9 +1,5 @@
 # coding: utf-8
 
-import warnings 
-warnings.filterwarnings('ignore',category=FutureWarning)
-warnings.filterwarnings('ignore',category=RuntimeWarning)
-
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt

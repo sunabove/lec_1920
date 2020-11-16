@@ -804,8 +804,7 @@ pass
 # -- camera
 
 # web by flask framewwork
-from flask import Flask, render_template, Response, jsonify
-from flask import request 
+from flask import Flask, render_template, Response, request, jsonify
 
 from BerryIMU import *
 
